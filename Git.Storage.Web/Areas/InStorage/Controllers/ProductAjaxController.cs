@@ -36,10 +36,10 @@ namespace Git.Storage.Web.Areas.InStorage.Controllers
             int InType = WebUtil.GetFormValue<int>("InType", 0);
             int ProductType = WebUtil.GetFormValue<int>("ProductType", 0);
             string ContractOrder = WebUtil.GetFormValue<string>("ContractOrder", string.Empty);
-            string SupNum = WebUtil.GetFormValue<string>("SupNum", string.Empty);
-            string SupName = WebUtil.GetFormValue<string>("SupName", string.Empty);
+            string SupNum = WebUtil.GetFormValue<string>("CusNum", string.Empty);
+            string SupName = WebUtil.GetFormValue<string>("CusName", string.Empty);
             string ContactName = WebUtil.GetFormValue<string>("ContactName", string.Empty);
-            string Phone = WebUtil.GetFormValue<string>("Phone", string.Empty);
+            string Phone = WebUtil.GetFormValue<string>("CusPhone", string.Empty);
             DateTime OrderTime = WebUtil.GetFormValue<DateTime>("OrderTime", DateTime.Now);
             string Remark = WebUtil.GetFormValue<string>("Remark", string.Empty);
 

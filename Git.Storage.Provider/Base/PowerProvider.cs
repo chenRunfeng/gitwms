@@ -123,10 +123,10 @@ namespace Git.Storage.Provider.Base
             ListResult = ListResult.IsNull() ? new List<SysResourceEntity>() : ListResult;
             bool hasPower = ListResult.Exists(a => a.ResNum.ToLower() == ResNum.ToLower() || a.Url.ToLower() == ResNum.ToLower());
             //超级管理员权限
-            if (RoleNum == ResourceManager.GetSettingEntity("Super_AdminRole").Value)
-            {
+            //if (RoleNum == ResourceManager.GetSettingEntity("Super_AdminRole").Value)
+            //{
                 hasPower = true;
-            }
+            //}
             return hasPower;
         }
 

@@ -56,10 +56,10 @@
                                 <div class="row-fluid" style="border: 1px solid #DDDDDD;">
                                     库位&nbsp;<input id="txtLocalName" name="txtLocalName" type="text" class="searchinfo" />&nbsp;&nbsp;
                                     产品&nbsp;<input id="txtProduct" name="txtProduct" type="text" class="searchinfo" />&nbsp;&nbsp;
-                                      库位类型&nbsp;
+                                      @*库位类型&nbsp;
                                     <select id="ddlLocalType" name="ddlLocalType" class="input-medium">
                                         @Html.Raw(ViewBag.LocalTypeList)
-                                    </select>
+                                    </select>*@
                                     &nbsp;&nbsp;
                                     <a id="gritter-remove-all" class="btn btn-info" href="javascript:void(0)" onclick="StockBillReport.PageClick(1,10)">搜索</a>
                                 </div>
@@ -69,7 +69,7 @@
                                     <thead>
                                         <tr class="widget-title">
                                             <th class="hidden-480">库位</th>
-                                            <th class="hidden-480">库位类型</th>
+                                            <th class="hidden-480">批次</th>
                                             <th class="hidden-480">产品编号</th>
                                             <th class="hidden-480">产品条码</th>
                                             <th class="hidden-480">产品名称</th>

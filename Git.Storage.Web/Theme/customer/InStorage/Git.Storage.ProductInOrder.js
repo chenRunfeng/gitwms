@@ -3,7 +3,15 @@ var orderProduct = {
     Load: function () {
         orderProduct.AutoSup();
         orderProduct.LoadDetail();
+        orderProduct.AutoCus();
 
+        $("#txtCusNum").CustomerDialog({
+            data: undefined, Mult: false, callBack: function (result) {
+                $("#txtCusNum").val(result.CusNum);
+                $("#txtCusName").val(result.CusName);
+                orderProduct.CusNameChange();
+            }
+        });
         $("#txtSupNum").SupplierDialog({
             data: undefined, Mult: false, callBack: function (result) {
                 $("#txtSupNum").val(result.SupNum);
@@ -122,6 +130,25 @@ var orderProduct = {
             }
         });
     },
+    AutoCus: function () {
+        $("#txtCusNum").autocomplete({
+            paramName: "cusName",
+            url: '/Client/CustomerAjax/Auto',
+            showResult: function (value, data) {
+                var row = JSON.parse(value);
+                return '<span>' + row.CusNum + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + row.CusName + '</span>';
+            },
+            onItemSelect: function (item) {
+
+            },
+            maxItemsToShow: 5,
+            selectedCallback: function (item) {
+                $("#txtCusNum").val(item.CusNum);
+                $("#txtCusName").val(item.CusName);
+                orderProduct.CusNameChange();
+            }
+        });
+    },
     EditNum: function (snNum, num) {
         var html = "<div style='padding:10px;'>数量：<input type='text' id='txtNum' name='txtNum' value='" + num + "' /></div>";
         var submit = function (v, h, f) {
@@ -213,51 +240,162 @@ var orderProduct = {
             }
         });
     },
+    //Add: function () {
+    //    var InType = $("#ddlInType").val();
+    //    var ProductType = $("#ddlProductType").val();
+    //    var ContractOrder = $("#txtContractOrder").val();
+    //    var SupNum = $("#txtSupNum").val();
+    //    var SupName = $("#txtSupName").val();
+    //    var ContactName = $("#txtContactName").val();
+    //    var Phone = $("#txtSupPhone").val();
+    //    var OrderTime = $("#txtOrderTime").val();
+    //    var Remark = $("#txtRemark").val();
+    //    if (git.IsEmpty(InType)) {
+    //        $.jBox.tip("请选择入库单类型", "warn");
+    //        return false;
+    //    }
+    //    if (git.IsEmpty(ProductType)) {
+    //        $.jBox.tip("请选择入库产品类型", "warn");
+    //        return false;
+    //    }
+    //    if (git.IsEmpty(SupNum)) {
+    //        $.jBox.tip("请选择供应商", "warn");
+    //        return false;
+    //    }
+
+    //    var param = {};
+    //    param["InType"] = InType;
+    //    param["ProductType"] = ProductType;
+    //    param["ContractOrder"] = ContractOrder;
+    //    param["SupNum"] = SupNum;
+    //    param["SupName"] = SupName;
+    //    param["ContactName"] = ContactName;
+    //    param["Phone"] = Phone;
+    //    param["OrderTime"] = OrderTime;
+    //    param["Remark"] = Remark;
+
+    //    $.gitAjax({
+    //        url: "/InStorage/ProductAjax/Create",
+    //        data: param,
+    //        type: "post",
+    //        dataType: "json",
+    //        success: function (result) {
+    //            if (result.Key == "1000") {
+    //                $.jBox.tip("入库单创建成功", "success");
+    //                orderProduct.Cancel();
+    //            } else {
+    //                $.jBox.tip("入库单创建失败", "error");
+    //            }
+    //        }
+    //    });
+    //},
     Add: function () {
+        var OrderNum = $("#txtOrderNum").val();
         var InType = $("#ddlInType").val();
         var ProductType = $("#ddlProductType").val();
         var ContractOrder = $("#txtContractOrder").val();
-        var SupNum = $("#txtSupNum").val();
-        var SupName = $("#txtSupName").val();
+        var CusNum = $("#txtCusNum").val();
+        var CusName = $("#txtCusName").val();
+        var Address = $("#ddlAddress").find("option:selected").text();
+        var Phone = $("#txtCusPhone").val();
         var ContactName = $("#txtContactName").val();
-        var Phone = $("#txtSupPhone").val();
+        var CrateUser = $("#txtCrateUser").val();
         var OrderTime = $("#txtOrderTime").val();
         var Remark = $("#txtRemark").val();
-        if (git.IsEmpty(InType)) {
-            $.jBox.tip("请选择入库单类型", "warn");
-            return false;
-        }
-        if (git.IsEmpty(ProductType)) {
-            $.jBox.tip("请选择入库产品类型", "warn");
-            return false;
-        }
-        if (git.IsEmpty(SupNum)) {
-            $.jBox.tip("请选择供应商", "warn");
-            return false;
-        }
-
+            if (git.IsEmpty(InType)) {
+                $.jBox.tip("请选择入库单类型", "warn");
+                return false;
+            }
+            if (git.IsEmpty(ProductType)) {
+                $.jBox.tip("请选择入库产品类型", "warn");
+                return false;
+            }
+        //if (git.IsEmpty(CusNum)) {
+        //    $.jBox.tip("请选择客户", "warn");
+        //    return false;
+        //}
         var param = {};
+        param["OrderNum"] = OrderNum;
         param["InType"] = InType;
         param["ProductType"] = ProductType;
         param["ContractOrder"] = ContractOrder;
-        param["SupNum"] = SupNum;
-        param["SupName"] = SupName;
+        param["CusNum"] = CusNum;
+        param["CusName"] = CusName;
+        param["Address"] = Address;
         param["ContactName"] = ContactName;
-        param["Phone"] = Phone;
+        param["CrateUser"] = CrateUser;
+        param["CusPhone"] = Phone;
         param["OrderTime"] = OrderTime;
         param["Remark"] = Remark;
-
         $.gitAjax({
             url: "/InStorage/ProductAjax/Create",
             data: param,
             type: "post",
             dataType: "json",
             success: function (result) {
-                if (result.Key == "1000") {
-                    $.jBox.tip("入库单创建成功", "success");
-                    orderProduct.Cancel();
-                } else {
-                    $.jBox.tip("入库单创建失败", "error");
+                            if (result.Key == "1000") {
+                                $.jBox.tip("入库单创建成功", "success");
+                                orderProduct.Cancel();
+                            } else {
+                                $.jBox.tip("入库单创建失败", "error");
+                            }
+                        
+            }
+        });
+    },
+    Cancel: function () {
+        $.gitAjax({
+            url: "/OutStorage/ProductAjax/Cancel",
+            data: undefined,
+            type: "post",
+            dataType: "json",
+            success: function (result) {
+                orderProduct.LoadDetail();
+            }
+        });
+        $("#txtContractOrder").val("");
+        $("#txtCusNum").val("");
+        $("#txtCusName").val("");
+        $("#ddlAddress").empty();
+        $("#txtCusPhone").val("");
+        $("#txtContactName").val("");
+        $("#txtRemark").val("");
+        $("#txtOrderTime").val("");
+    },
+    CusNameChange: function () {
+        var Local = $("#ddlAddress");
+        Local.empty();
+        var CusNum = $("#txtCusNum").val();
+        var param = {};
+        param["CusNum"] = CusNum;
+        $.gitAjax({
+            url: "/Client/CustomerAjax/GetSelectAddress",
+            data: param,
+            type: "post",
+            dataType: "json",
+            success: function (result) {
+                var json = result;
+                if (json.Data != undefined && json.Data.List != undefined && json.Data.List.length > 0) {
+
+                    $(json.Data.List).each(function (i, item) {
+                        var option = $("<option>").text(item.Address).val(item.SnNum).attr("data-Contact", item.Contact).attr("data-Phone", item.Phone);
+                        Local.append(option);
+
+                        var address = $("#hdAddress").val();
+                        if (address != undefined && address != "") {
+                            $(Local).children("option").each(function (i, child) {
+                                if ($(child).text() == address) {
+                                    $(child).attr("selected", true);
+                                }
+                            });
+                        }
+                        $(Local).change(function () {
+                            var Contact = $(this).find("option:selected").attr("data-Contact");
+                            var Phone = $(this).find("option:selected").attr("data-Phone");
+                            $("#txtCusPhone").val(Phone);
+                            $("#txtContactName").val(Contact);
+                        });
+                    });
                 }
             }
         });
@@ -312,24 +450,24 @@ var orderProduct = {
             }
         });
     },
-    Cancel: function () {
-        $.gitAjax({
-            url: "/InStorage/ProductAjax/Cancel",
-            data: undefined,
-            type: "post",
-            dataType: "json",
-            success: function (result) {
-                orderProduct.LoadDetail();
-            }
-        });
-        $("#txtContractOrder").val("");
-        $("#txtSupNum").val("");
-        $("#txtSupName").val("");
-        $("#txtContactName").val("");
-        $("#txtSupPhone").val("");
-        $("#txtOrderTime").val("");
-        $("#txtRemark").val("");
-    }
+    //Cancel: function () {
+    //    $.gitAjax({
+    //        url: "/InStorage/ProductAjax/Cancel",
+    //        data: undefined,
+    //        type: "post",
+    //        dataType: "json",
+    //        success: function (result) {
+    //            orderProduct.LoadDetail();
+    //        }
+    //    });
+    //    $("#txtContractOrder").val("");
+    //    $("#txtSupNum").val("");
+    //    $("#txtSupName").val("");
+    //    $("#txtContactName").val("");
+    //    $("#txtSupPhone").val("");
+    //    $("#txtOrderTime").val("");
+    //    $("#txtRemark").val("");
+    //}
 };
 
 
@@ -370,7 +508,7 @@ var InStorageManager = {
                             html += "<td><input type=\"checkbox\" value=\"" + item.OrderNum + "\"/></td>";
                             html += "<td>" + item.OrderNum + "</td>";
                             html += "<td>" + git.GetEnumDesc(EInType, item.InType) + "</td>";
-                            html += "<td>" + item.SupName + "</td>";
+                            //html += "<td>" + item.SupName + "</td>";
                             html += "<td>" + item.ContractOrder + "</td>";
                             html += "<td>" + item.Num + "</td>";
                             html += "<td>" + git.ToDecimal(item.Amount,2) + "&nbsp;元</td>";

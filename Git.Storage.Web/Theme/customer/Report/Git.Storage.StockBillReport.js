@@ -22,7 +22,7 @@
                     $(json.Data.List).each(function (i, item) {
                         Html += "<tr class=\"odd gradeX\">";
                         Html += "<td>" + item.LocalName + "</td>";
-                        Html += "<td>" + git.GetEnumDesc(ELocalType, item.LocalType) + "</td>";
+                        Html += "<td>" + item.BatchNum+ "</td>";
                         Html += "<td>" + item.ProductNum + "</td>";
                         Html += "<td>" + item.BarCode + "</td>";
                         Html += "<td title='" + item.ProductName + "'>" + git.GetStrSub(item.ProductName,25) + "</td>";
@@ -36,21 +36,21 @@
                         Html += "</tr>";
                     });
                 }
-                Html += "<tr class=\"odd gradeX\">";
-                Html += "<td></td>";
-                Html += "<td></td>";
-                Html += "<td></td>";
-                Html += "<td></td>";
-                Html += "<td></td>";
-                Html += "<td></td>";
-                Html += "<td></td>";
-                Html += "<td></td>";
-                Html += "<td>总计：</td>";
-                Html += "<td>" + result.AllNum + "</td>";
+                //Html += "<tr class=\"odd gradeX\">";
                 //Html += "<td></td>";
-                //Html += "<td>" + result.AllTotalPrice + "</td>";
+                //Html += "<td></td>";
+                //Html += "<td></td>";
+                //Html += "<td></td>";
+                //Html += "<td></td>";
+                //Html += "<td></td>";
+                //Html += "<td></td>";
+                //Html += "<td></td>";
+                //Html += "<td>总计：</td>";
+                //Html += "<td>" + result.AllNum + "</td>";
+                ////Html += "<td></td>";
+                ////Html += "<td>" + result.AllTotalPrice + "</td>";
 
-                Html += "</tr>";
+                //Html += "</tr>";
                 $("#tabInfo tbody").html(Html);
                 $("#mypager").pager({ pagenumber: pageIndex, recordCount: json.RowCount, pageSize: pageSize, buttonClickCallback: StockBillReport.PageClick });
             }

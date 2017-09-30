@@ -26,7 +26,7 @@ using Git.Storage.Entity.Store;
 using Git.Framework.DataTypes;
 using Git.Framework.Json;
 using Git.Storage.Common;
-using System.Net.Http;
+//using System.Net.Http;
 using Git.Framework.Resource;
 using System.Transactions;
 using Newtonsoft.Json.Linq;
