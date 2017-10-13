@@ -13,6 +13,8 @@ using Git.Storage.Provider.Base;
 using Git.Storage.Web.Lib.Filter;
 using System.Net.Http;
 using Git.Framework.Resource;
+using Git.Storage.Provider.Store;
+using Git.Storage.Entity.Store;
 
 namespace Git.Storage.Web.Controllers
 {
@@ -230,6 +232,24 @@ namespace Git.Storage.Web.Controllers
         [LoginFilter(false, false)]
         public ActionResult Welcome()
         {
+            ProductProvider p = new ProductProvider();
+            List<ProductEntity> prolist = p.GetList();
+            List<ProductEntity> list = new List<ProductEntity>();
+            foreach(var pro in prolist)
+            {
+                if(pro.LocalProductNum>=pro.MaxNum)
+                {
+                    //pro.ProductName
+                    pro.Remark = "1";
+                    list.Add(pro);
+                }
+                if(pro.LocalProductNum<=pro.MinNum)
+                {
+                    pro.Remark = "2";
+                    list.Add(pro);
+                }
+            }
+            ViewBag.produtlist = list;
             return View();
         }
     }

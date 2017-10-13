@@ -225,7 +225,7 @@
                                 </table>
 
                                 <div class="form-actions formBtn">
-                                    <button type="submit" class="btn btn-primary" onclick="orderProduct.SelectDialog()"><i class="icon-plus"></i>新增产品</button>
+                                    <button type="submit" class="btn btn-primary" onclick="orderProduct.SelectDialog('0')"><i class="icon-plus"></i>新增产品</button>
                                     <button type="submit" class="btn btn-primary" onclick="orderProduct.Add()"><i class="icon-ok"></i>保存</button>
                                     <button type="button" class="btn" onclick="orderProduct.Cancel()">取消</button>
                                 </div>
@@ -238,9 +238,13 @@
     </div>
     @Html.Partial("_Foot")
     <script type="text/javascript">
+        var SnSum =@ViewBag.SnNum;
         $(document).ready(function () {
             orderProduct.Load();
-            
+            if(SnSum!="0")
+            {
+                orderProduct.SelectDialog(SnSum);
+            }
         });
     </script>
 </body>

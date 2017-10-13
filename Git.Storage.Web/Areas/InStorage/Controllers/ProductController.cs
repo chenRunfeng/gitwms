@@ -36,10 +36,11 @@ namespace Git.Storage.Web.Areas.InStorage.Controllers
         /// </summary>
         /// <returns></returns>
         [LoginFilter]
-        public ActionResult Add()
+        public ActionResult Add(string SnNum="0")
         {
             ViewBag.InType = EnumHelper.GetOptions<EInType>((int)EInType.Produce, "请选择入库单类型");
             ViewBag.ProductType = EnumHelper.GetOptions<EProductType>((int)EProductType.Goods, "请选择入库产品类型");
+            ViewBag.SnNum = SnNum;
             Session[CacheKey.TEMPDATA_CACHE_INSTORDETAIL] = null;
             return View();
         }
@@ -49,11 +50,12 @@ namespace Git.Storage.Web.Areas.InStorage.Controllers
         /// </summary>
         /// <returns></returns>
         [LoginFilter]
-        public ActionResult AddProduct()
+        public ActionResult AddProduct(string SnNum="0")
         {
             //查询成品管理正式库位
             string storeNum = this.DefaultStore;
             ViewBag.LocalOptions = LocalHelper.GetLocalNum(storeNum,ELocalType.Normal,string.Empty);
+            ViewBag.snnum = SnNum;
             return View();
         }
 

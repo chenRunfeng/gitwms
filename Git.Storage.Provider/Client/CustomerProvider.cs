@@ -128,6 +128,7 @@ namespace Git.Storage.Provider.Client
                 .IncludePhone(true)
                 .IncludeRemark(true)
                 .IncludeCusType(true)
+                .IncludeTaxpayerNum(true)
                 ;
             entity.Where(a => a.CusNum == entity.CusNum);
             int line = this.Customer.Update(entity);

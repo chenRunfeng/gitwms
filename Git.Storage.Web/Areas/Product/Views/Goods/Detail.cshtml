@@ -68,10 +68,10 @@
                     </select>
                 </td>
             </tr>
-            <tr>
+            @*<tr>
                 <td>默认仓库</td>
                 <td>
-                    <select id="ddlStorage" name="ddlStorage" class="input-medium" onchange="Product.DdlChange('@ViewBag.Goods.DefaultLocal')" style="width:165px;">
+                    <select id="ddlStorage" name="ddlStorage" class="input-medium" onchange="Product.DdlChange('@ViewBag.Goods.DefaultLocal')" style="width:165px;" disabled>
                         @Html.Raw(ViewBag.Storage)
                     </select>
                     <input id="hiddent" name="hiddent" type="hidden"  class="input-medium" value="@ViewBag.Goods.DefaultLocal">
@@ -82,14 +82,28 @@
                         @Html.Raw(ViewBag.Local)
                     </select>
                 </td>
-            </tr>
+            </tr>*@
             <tr>
+                <td>默认库位</td>
+                <td>
+                    <select id="ddlLocal" name="ddlLocal" class="input-medium" style="width:165px;">
+                        @Html.Raw(ViewBag.Local)
+                    </select>
+                </td>
                 <td>描述</td>
                 <td colspan="3">
                     <input id="txtDescripte" name="txtDescripte" type="text" placeholder="" class="input-medium" value="@ViewBag.Goods.Description"/>
                 </td>
             </tr>
-
+            <tr>
+                @*<td>默认仓库</td>*@
+                <td hidden>
+                    <select id="ddlStorage" name="ddlStorage" class="input-medium" onchange="Product.DdlChange('@ViewBag.Goods.DefaultLocal')" style="width:165px;" >
+                        @Html.Raw(ViewBag.Storage)
+                    </select>
+                    <input id="hiddent" name="hiddent" type="hidden" class="input-medium" value="@ViewBag.Goods.DefaultLocal">
+                </td>
+            </tr>
         </table>
     </div>
     <script type="text/javascript">

@@ -22,6 +22,7 @@ var Customer = {
                         Html += "<tr class=\"odd gradeX\">";
                         Html += "<td><input type=\"checkbox\" name=\"user_item\" class=\"checkboxes\" value=\"" + item.CusNum + "\"/></td>";
                         Html += "<td>" + item.CusNum + "</td>";
+                        Html += "<td>" + item.TaxpayerNum + "</td>";
                         Html += "<td>" + item.CusName + "</td>";
                         Html += "<td>" + item.Phone + "</td>";
                         Html += "<td>" + item.Fax + "</td>";
@@ -69,6 +70,7 @@ var Customer = {
                 var Email = h.find("#txtEmail").val();
                 var Phone = h.find("#txtPhone").val();
                 var Remark = h.find("#txtRemark").val();
+                var TaxpayerNum = h.find("#txtTaxpayerNum").val();
                 if (CusName == undefined || CusName == "") {
                     $.jBox.tip("请输入客户名称", "warn");
                     return false;
@@ -82,6 +84,7 @@ var Customer = {
                 param["Phone"] = Phone;
                 param["Remark"] = Remark;
                 param["CusType"] = CusType;
+                param["TaxpayerNum"] = TaxpayerNum;
                 $.gitAjax({
                     url: "/CustomerAjax/AddCustomer", type: "post", data: { "entity": JSON.stringify(param) }, success: function (result) {
                         if (result.d == "success") {

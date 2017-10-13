@@ -21,7 +21,7 @@ var orderProduct = {
             }
         });
     },
-    SelectDialog: function () {
+    SelectDialog: function (SnNum) {
         var submit = function (v, h, f) {
             if (v == true) {
                 var SnNum = h.find("#hdProductNum").val();
@@ -75,7 +75,7 @@ var orderProduct = {
                 });
             }
         };
-        $.jBox.open("get:/InStorage/Product/AddProduct", "入库产品", 400, 410, {
+        $.jBox.open("get:/InStorage/Product/AddProduct?SnNum="+SnNum, "入库产品", 400, 410, {
             buttons: { "确定": true, "关闭": false }, submit: submit, loaded: function (item) {
                 orderProduct.AutoProduct($(item).find("#txtBarCode"), item);
                 $(item).find("#txtBarCode").ProductDialog({
@@ -400,42 +400,94 @@ var orderProduct = {
             }
         });
     },
+    //Edit: function () {
+    //    var InType = $("#ddlInType").val();
+    //    var ProductType = $("#ddlProductType").val();
+    //    var ContractOrder = $("#txtContractOrder").val();
+    //    var SupNum = $("#txtSupNum").val();
+    //    var SupName = $("#txtSupName").val();
+    //    var ContactName = $("#txtContactName").val();
+    //    var Phone = $("#txtSupPhone").val();
+    //    var OrderTime = $("#txtOrderTime").val();
+    //    var Remark = $("#txtRemark").val();
+    //    var orderNum = $("#txtOrderNum").val();
+    //    if (git.IsEmpty(InType)) {
+    //        $.jBox.tip("请选择入库单类型", "warn");
+    //        return false;
+    //    }
+    //    //if (git.IsEmpty(ProductType)) {
+    //    //    $.jBox.tip("请选择入库产品类型", "warn");
+    //    //    return false;
+    //    //}
+    //    if (git.IsEmpty(SupNum)) {
+    //        $.jBox.tip("请选择供应商", "warn");
+    //        return false;
+    //    }
+
+    //    var param = {};
+    //    param["OrderNum"] = orderNum;
+    //    param["InType"] = InType;
+    //    param["ProductType"] = ProductType;
+    //    param["ContractOrder"] = ContractOrder;
+    //    param["SupNum"] = SupNum;
+    //    param["SupName"] = SupName;
+    //    param["ContactName"] = ContactName;
+    //    param["Phone"] = Phone;
+    //    param["OrderTime"] = OrderTime;
+    //    param["Remark"] = Remark;
+
+    //    $.gitAjax({
+    //        url: "/InStorage/ProductAjax/Edit",
+    //        data: param,
+    //        type: "post",
+    //        dataType: "json",
+    //        success: function (result) {
+    //            if (result.Key == "1000") {
+    //                $.jBox.tip("入库单编辑成功", "success");
+    //            } else {
+    //                $.jBox.tip("入库单编辑失败", "error");
+    //            }
+    //        }
+    //    });
+    //},
     Edit: function () {
+        var OrderNum = $("#txtOrderNum").val();
         var InType = $("#ddlInType").val();
         var ProductType = $("#ddlProductType").val();
         var ContractOrder = $("#txtContractOrder").val();
-        var SupNum = $("#txtSupNum").val();
-        var SupName = $("#txtSupName").val();
+        var CusNum = $("#txtCusNum").val();
+        var CusName = $("#txtCusName").val();
+        var Address = $("#ddlAddress").find("option:selected").text();
+        var Phone = $("#txtCusPhone").val();
         var ContactName = $("#txtContactName").val();
-        var Phone = $("#txtSupPhone").val();
+        var CrateUser = $("#txtCrateUser").val();
         var OrderTime = $("#txtOrderTime").val();
         var Remark = $("#txtRemark").val();
-        var orderNum = $("#txtOrderNum").val();
         if (git.IsEmpty(InType)) {
             $.jBox.tip("请选择入库单类型", "warn");
             return false;
         }
-        //if (git.IsEmpty(ProductType)) {
-        //    $.jBox.tip("请选择入库产品类型", "warn");
-        //    return false;
-        //}
-        if (git.IsEmpty(SupNum)) {
-            $.jBox.tip("请选择供应商", "warn");
+        if (git.IsEmpty(ProductType)) {
+            $.jBox.tip("请选择入库产品类型", "warn");
             return false;
         }
-
+        //if (git.IsEmpty(CusNum)) {
+        //    $.jBox.tip("请选择客户", "warn");
+        //    return false;
+        //}
         var param = {};
-        param["OrderNum"] = orderNum;
+        param["OrderNum"] = OrderNum;
         param["InType"] = InType;
         param["ProductType"] = ProductType;
         param["ContractOrder"] = ContractOrder;
-        param["SupNum"] = SupNum;
-        param["SupName"] = SupName;
+        param["CusNum"] = CusNum;
+        param["CusName"] = CusName;
+        param["Address"] = Address;
         param["ContactName"] = ContactName;
-        param["Phone"] = Phone;
+        param["CrateUser"] = CrateUser;
+        param["CusPhone"] = Phone;
         param["OrderTime"] = OrderTime;
         param["Remark"] = Remark;
-
         $.gitAjax({
             url: "/InStorage/ProductAjax/Edit",
             data: param,
@@ -696,5 +748,20 @@ var InStorageManager = {
         else {
             $("#tabInfo").children("tbody").find("input[type='checkbox']").attr("checked", false);
         }
+    },
+    LoadProduct: function (snsum) {
+        $.gitAjax({
+            url: "/InStorage/ProductAjax/GetProduct", type: "post", SnNum: snsum, success: function (result) {
+                result = JSON.stringify(result);
+                $("#txtBarCode").val(result.BarCode);
+                $("#txtProductName").val(result.ProductName);
+                $("#txtSize").val(unescape(result.Size));
+                $("#txtPrice").val(git.ToDecimal(result.InPrice, 2));
+                $("#txtLocalQty").val(result.Num);
+                $("#hdProductNum").val(result.SnNum);
+                $("#spanUnitName1").text(result.UnitName);
+                $("#spanUnitName2").text(result.UnitName);
+            }
+        })
     }
 };

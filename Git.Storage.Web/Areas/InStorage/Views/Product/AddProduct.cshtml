@@ -68,7 +68,14 @@
         </table>
     </div>
 </body>
-
 </html>
-
+<script>
+    var snnum=@ViewBag.snnum;
+    $(document).ready(function () {
+        if(snnum!="0")
+        {
+            orderProduct.LoadProduct(SnSum);
+        }
+    });
+</script>
 

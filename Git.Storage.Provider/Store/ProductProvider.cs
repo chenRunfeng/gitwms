@@ -180,7 +180,27 @@ namespace Git.Storage.Provider.Store
             pageInfo.RowCount = rowCount;
             return list;
         }
-
+        public List<ProductEntity> GetList()
+        {
+            List<ProductEntity> relist = new List<ProductEntity>();
+            List<ProductEntity> list = this.Product.GetList();
+            Proc_ProductReportEntity prEntity = new Proc_ProductReportEntity();
+            DateTime beginTime = ConvertHelper.ToType<DateTime>(string.Empty, DateTime.Now.AddDays(-1));
+            DateTime endTime = ConvertHelper.ToType<DateTime>(string.Empty, DateTime.Now);
+            prEntity.BeginTime = beginTime;
+            prEntity.EndTime = endTime;
+            prEntity.SearchKey = "";
+            foreach (var item in list)
+            {
+                prEntity.ProductNum = item.SnNum;
+                prEntity.IsDelete = (int)EIsDelete.NotDelete;
+                prEntity.Status = (int)EAudite.Pass;
+                int link = Proc_ProductReport.ExecuteNonQuery(prEntity);
+                item.LocalProductNum = prEntity.LocalProductNum;
+                relist.Add(item);
+            }
+            return relist;
+        }
         /// <summary>
         /// 存储过程查询在线产品库存
         /// </summary>

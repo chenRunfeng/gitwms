@@ -170,8 +170,19 @@ namespace Git.Storage.Entity.Store
 			}
 			return this;
 		}
+        [DataMapping(ColumnName = "TaxpayerNum", DbType = DbType.String, Length = 50, CanNull = true, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
+        public string TaxpayerNum { get; set; }
 
-	}
+        public CustomerEntity IncludeTaxpayerNum(bool flag)
+        {
+            if (flag && !this.ColumnList.Contains("TaxpayerNum"))
+            {
+                this.ColumnList.Add("TaxpayerNum");
+            }
+            return this;
+        }
+
+    }
     public partial class CustomerEntity
     {
         /// <summary>
