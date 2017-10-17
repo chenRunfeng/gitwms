@@ -98,6 +98,9 @@ var orderProduct = {
                 });
             }
         });
+        //$.jBox.open("get:/InStorage/Product/AddProduct?SnNum=" + SnNum, "入库产品", 400, 410, {
+        //    buttons: { "确定": true, "关闭": false }, submit: submit
+        //});
     },
     LoadDetail: function () {
         $.gitAjax({

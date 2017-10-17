@@ -287,8 +287,8 @@ namespace Git.Storage.Web.Areas.InStorage.Controllers
         {
             ProductProvider p = new ProductProvider();
             ProductEntity pro = p.GetProductBySn(SnSum);
-            //string json = ConvertJson.Serializer<ProductEntity>(pro);
-            this.ReturnJson.AddProperty("Data",pro);
+            string json = ConvertJson.Serializer<ProductEntity>(pro);
+            this.ReturnJson.AddProperty("Data",json);
             return Content(this.ReturnJson.ToString());
         }
     }
