@@ -57,7 +57,7 @@
                                             <tr>
                                                 <td>@item.ProductName</td>
                                                 <td>库存量已达到预警下限</td>
-                                                <td><button class="btn btn-danger" value="@item.SnNum">减仓</button></td>
+                                                <td><button class="btn btn-danger" onclick="ReduceCall('@item.SnNum')">减仓</button></td>
                                             </tr>
                                         }
                                         else
@@ -65,7 +65,7 @@
                                             <tr>
                                                 <td>@item.ProductName</td>
                                                 <td>库存量已达到预警下限</td>
-                                                <td><button class="btn btn-primary" onclick="MarginCall(@item.SnNum)">补仓</button></td>
+                                                <td><button class="btn btn-primary" onclick='MarginCall("@item.SnNum")'>补仓</button></td>
                                             </tr>
                                         }
                                     }
@@ -83,5 +83,8 @@
 <script>
     function MarginCall(snnum) {
         window.location.href = "/InStorage/Product/Add?SnNum="+snnum;
+    }
+    function ReduceCall(snnum) {
+        window.location.href = "/OutStorage/Product/Add?BarCode="+snnum;
     }
 </script>

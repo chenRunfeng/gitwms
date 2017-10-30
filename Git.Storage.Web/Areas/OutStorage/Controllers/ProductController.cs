@@ -29,12 +29,13 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
         /// </summary>
         /// <returns></returns>
         [LoginFilter]
-        public ActionResult Add()
+        public ActionResult Add(string BarCode="0")
         {
             Session[CacheKey.TEMPDATA_CACHE_OUTSTORDETAIL] = null;
             ViewBag.CraterUser = this.LoginUserName;
             ViewBag.OutType = EnumHelper.GetOptions<EOutType>((int)EOutType.Sell, "请选择出库单类型");
             ViewBag.ProductType = EnumHelper.GetOptions<EProductType>((int)EProductType.Goods, "请选择出库产品类型");
+            ViewBag.BarCode = BarCode;
             return View();
         }
 

@@ -70,23 +70,34 @@
 </body>
 </html>
 <script>
-    var snnum=@ViewBag.snnum;
+    var snnum="@ViewBag.snnum";
     $(document).ready(function () {
         if(snnum!="0")
         {
-            $.gitAjax({
-                url: "/InStorage/ProductAjax/GetProduct", type: "post", SnNum: snnum, success: function (result) {
-                    result = JSON.stringify(result);
-                    $("#txtBarCode").val(result.BarCode);
-                    $("#txtProductName").val(result.ProductName);
-                    $("#txtSize").val(unescape(result.Size));
-                    $("#txtPrice").val(git.ToDecimal(result.InPrice, 2));
-                    $("#txtLocalQty").val(result.Num);
-                    $("#hdProductNum").val(result.SnNum);
-                    $("#spanUnitName1").text(result.UnitName);
-                    $("#spanUnitName2").text(result.UnitName);
-                }
+            $.post("/InStorage/ProductAjax/GetProduct",{SnNum: snnum},function (result) {
+                //result = JSON.stringify(result);
+                $("#txtBarCode").val(result.BarCode);
+                $("#txtProductName").val(result.ProductName);
+                $("#txtSize").val(unescape(result.Size));
+                $("#txtPrice").val(git.ToDecimal(result.InPrice, 2));
+                $("#txtLocalQty").val(result.Num);
+                $("#hdProductNum").val(result.SnNum);
+                $("#spanUnitName1").text(result.UnitName);
+                $("#spanUnitName2").text(result.UnitName);
             });
+            //$.gitAjax({
+            //    url: "/InStorage/ProductAjax/GetProduct", type: "post", SnNum: snnum, success: function (result) {
+            //        result = JSON.stringify(result);
+            //        $("#txtBarCode").val(result.BarCode);
+            //        $("#txtProductName").val(result.ProductName);
+            //        $("#txtSize").val(unescape(result.Size));
+            //        $("#txtPrice").val(git.ToDecimal(result.InPrice, 2));
+            //        $("#txtLocalQty").val(result.Num);
+            //        $("#hdProductNum").val(result.SnNum);
+            //        $("#spanUnitName1").text(result.UnitName);
+            //        $("#spanUnitName2").text(result.UnitName);
+            //    }
+            //});
         }
     });
 </script>
