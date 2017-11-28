@@ -234,6 +234,7 @@ namespace Git.Storage.Web.Controllers
         {
             ProductProvider p = new ProductProvider();
             List<ProductEntity> prolist = p.GetList();
+            ViewBag.role =this.LoginUser.RoleNum;
             List<ProductEntity> list = new List<ProductEntity>();
             foreach(var pro in prolist)
             {
@@ -250,6 +251,16 @@ namespace Git.Storage.Web.Controllers
                 }
             }
             ViewBag.produtlist = list;
+            return View();
+        }
+        [LoginFilter(false,false)]
+        public ActionResult Sale()
+        {
+            return View();
+        }
+        [LoginFilter(false,false)]
+        public ActionResult Finance()
+        {
             return View();
         }
     }

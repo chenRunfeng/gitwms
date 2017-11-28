@@ -38,41 +38,46 @@
                 </div>
                 <div class="row-fluid" style="text-align:center;">
                     <h1>欢迎使用仓库管理系统</h1><br>
-                    <div class="widget">
-                        <div class="widget-title">
-                            <h4><i class="icon-reorder"></i>预警消息</h4>
-                        </div>
-                        <div class="widget-body">                            
-                            <table  class="table table-hover">
-                                <tr>
-                                    <th>产品名称</th>
-                                    <th>状态</th>
-                                    <th>操作</th>
-                                </tr>
-                                @{
-                                    foreach (var item in ViewBag.produtlist)
-                                    {
-                                        if (item.Remark == "1")
-                                        {
-                                            <tr>
-                                                <td>@item.ProductName</td>
-                                                <td>库存量已达到预警下限</td>
-                                                <td><button class="btn btn-danger" value="@item.SnNum">减仓</button></td>
-                                            </tr>
+                    @{
+                        if (ViewBag.role== "000001")
+                        {
+                            <div class="widget">
+                                <div class="widget-title">
+                                    <h4><i class="icon-reorder"></i>预警消息</h4>
+                                </div>
+                                <div class="widget-body">
+                                    <table class="table table-hover">
+                                        <tr>
+                                            <th>产品名称</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        @{
+                                            foreach (var item in ViewBag.produtlist)
+                                            {
+                                                if (item.Remark == "1")
+                                                {
+                                                    <tr>
+                                                        <td>@item.ProductName</td>
+                                                        <td>库存量已达到预警上限</td>
+                                                        <td><button class="btn btn-danger" value="'@item.SnNum'">减仓</button></td>
+                                                    </tr>
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td>@item.ProductName</td>
+                                                        <td>库存量已达到预警下限</td>
+                                                        <td><button class="btn btn-primary" onclick="MarginCall('@item.SnNum')">补仓</button></td>
+                                                    </tr>
+                                                }
+                                            }
                                         }
-                                        else
-                                        {
-                                            <tr>
-                                                <td>@item.ProductName</td>
-                                                <td>库存量已达到预警下限</td>
-                                                <td><button class="btn btn-primary" onclick="MarginCall(@item.SnNum)">补仓</button></td>
-                                            </tr>
-                                        }
-                                    }
-                                }
-                            </table>                                                       
-                        </div>
-                    </div>                                        
+                                    </table>
+                                </div>
+                            </div>
+                                            }
+                    }                               
                 </div>
             </div>
         </div>

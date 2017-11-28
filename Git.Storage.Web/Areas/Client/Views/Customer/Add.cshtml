@@ -20,33 +20,41 @@
     <div class="tab-pane active" id="widget_tab1">
         <table class="formtab_customer">
             <tr>
-                <td>编号</td>
+                <td>编号：</td>
                 <td>
                     <input id="txtCusNum" name="txtCusNum" type="text" placeholder="自动生成,可不填" class="input-medium" disabled="disabled" value="@ViewBag.Customer.CusNum"></td>
-                <td>名称</td>
+                <td>名称：</td>
                 <td><input id="txtCusName" name="txtCusName" type="text" placeholder="请输入客户名称" class="input-medium" value="@ViewBag.Customer.CusName"></td>
-                <td>备注</td>
-                <td >
-                    <input id="txtRemark" name="txtRemark" type="text" placeholder="" class="input-medium" value="@ViewBag.Customer.Remark">
-                </td>
+                <td>纳税人识别号：</td>
+                <td><input id="txtTaxpayerNum" name="txtTaxpayerNum" type="text" placeholder="" class="input-medium" value="@ViewBag.Customer.TaxpayerNum"></td>              
             </tr>
             <tr>
-                <td>传真</td>
+                <td>传真：</td>
                 <td>
                     <input id="txtFax" name="txtFax" type="text" placeholder="" class="input-medium" value="@ViewBag.Customer.Fax"></td>
-                <td>Email</td>
+                <td>邮箱：</td>
                 <td>
                     <input id="txtEmail" name="txtEmail" type="text" placeholder="" class="input-medium" value="@ViewBag.Customer.Email"></td>
-                <td>电话</td>
+                <td>电话：</td>
                 <td>
                     <input id="txtPhone" name="txtPhone" type="text" placeholder="" class="input-medium" value="@ViewBag.Customer.Phone"></td>
             </tr>
             <tr>
-                <td>纳税人识别号</td>
-                <td><input id="txtTaxpayerNum" name="txtTaxpayerNum" type="text" placeholder="" class="input-medium" value="@ViewBag.Customer.TaxpayerNum"></td>
+                <td>开户行：</td>
+                <td>
+                    <input id="txtRemark" name="txtRemark" type="text" placeholder="" class="input-medium" value="@ViewBag.Customer.Remark">
+                </td>
+                <td>银行账号：</td>
+                <td>
+                    <input id="txtRemark" name="txtBankNum" type="text" placeholder="" class="input-medium" value="@ViewBag.Customer.Remark">
+                </td>
+                <td>客户等级：</td>
+                <td>
+                    <input id="txtRemark" name="txtLevel" type="text" placeholder="" class="input-medium" value="@ViewBag.Customer.Remark">
+                </td>
             </tr>
-            <tr style="display:none;">
-               <td>类型</td>
+            <tr>
+               <td>类型：</td>
                 <td>
                     <select id="ddlCusType" name="ddlCusType" class="input-medium" style="width:165px;">
                         @Html.Raw(ViewBag.DdlCusType)

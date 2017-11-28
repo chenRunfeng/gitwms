@@ -55,6 +55,7 @@ namespace Git.Storage.Web.Lib.Filter
             if (this.ValidateLogin)
             {
                 AdminEntity LoginUser = filterContext.HttpContext.Session[CacheKey.SESSION_LOGIN_ADMIN] as AdminEntity;
+                //System.Web.HttpContext.Current.Session["role"] = LoginUser.RoleNum;
                 string path = filterContext.HttpContext.Request.Path;
                 if (LoginUser.IsNull())
                 {

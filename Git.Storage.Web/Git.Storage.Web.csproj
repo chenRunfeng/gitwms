@@ -2127,6 +2127,7 @@
     <Content Include="Theme\content\report\template\出库单打印模板.frx" />
     <Content Include="Theme\content\report\入库单打印模板.frx" />
     <Content Include="Theme\content\report\出库单打印模板.frx" />
+    <Content Include="Views\Home\Sale.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Git.Storage.Common\Git.Storage.Common.csproj">
