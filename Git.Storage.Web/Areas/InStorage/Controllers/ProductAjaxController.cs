@@ -283,13 +283,13 @@ namespace Git.Storage.Web.Areas.InStorage.Controllers
             return Content(this.ReturnJson.ToString());
         }
         [LoginAjaxFilter]
-        public ActionResult GetProduct(string SnSum)
+        public JsonResult GetProduct(string SnNum)
         {
             ProductProvider p = new ProductProvider();
-            ProductEntity pro = p.GetProductBySn(SnSum);
-            string json = ConvertJson.Serializer<ProductEntity>(pro);
-            this.ReturnJson.AddProperty("Data",json);
-            return Content(this.ReturnJson.ToString());
+            ProductEntity pro = p.GetProductBySn(SnNum);
+            //string json = ConvertJson.Serializer<ProductEntity>(pro);
+            //this.ReturnJson.AddProperty("Data",json);
+            return Json(pro);
         }
     }
 }
