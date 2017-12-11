@@ -195,6 +195,49 @@ var Product = {
             }
         });
     },
+    PageSClick: function (pageIndex, pageSize) {
+        pageSize = pageSize == undefined ? 10 : pageSize;
+        var ProductName = $("#txtProduct").val();
+        var CateNum = $("#ddlCategory").val();
+        var param = {};
+        param["PageIndex"] = pageIndex;
+        param["PageSize"] = pageSize;
+        param["ProductName"] = ProductName;
+        param["CateNum"] = CateNum;
+        $.gitAjax({
+            url: "/GoodsAjax/GetList",
+            data: param,
+            type: "post",
+            dataType: "json",
+            success: function (result) {
+                var json = result;
+                var Html = "";
+                if (json.Data != undefined && json.Data.List != undefined && json.Data.List.length > 0) {
+                    $(json.Data.List).each(function (i, item) {
+                        Html += "<tr class=\"odd gradeX\">";
+                        Html += "<td><input type=\"checkbox\" name=\"user_item\" class=\"checkboxes\" data=\"" + item.SnNum + "\" value=\"" + item.SnNum + "\"/></td>";
+                        Html += "<td>" + item.SnNum + "</td>";
+                        Html += "<td>" + item.BarCode + "</td>";
+                        Html += "<td>" + item.ProductName + "</td>";
+                        Html += "<td>" + item.MinNum + "</td>";
+                        Html += "<td>" + item.MaxNum + "</td>";
+                        Html += "<td>" + item.AvgPrice + "</td>";
+                        Html += "<td>" + item.Size + "</td>";
+                        Html += "<td>" + item.CateName + "</td>";
+                        Html += "<td>" + item.UnitName + "</td>";
+                        Html += "<td title='" + item.Description + "'>" + git.GetStrSub(item.Description, 10) + "</td>";
+                        Html += "<td>";
+                        Html += "<a class=\"icon-edit\" href=\"javascript:void(0)\" onclick=\"Product.Edit('" + item.SnNum + "')\" title=\"编辑\"></a>&nbsp;&nbsp;";
+                        Html += "<a class=\"icon-remove\" href=\"javascript:void(0)\" onclick=\"Product.Delete('" + item.SnNum + "')\" title=\"删除\"></a>";
+                        Html += "</td>";
+                        Html += "</tr>";
+                    });
+                }
+                $("#tabInfo tbody").html(Html);
+                $("#mypager").pager({ pagenumber: pageIndex, recordCount: json.RowCount, pageSize: pageSize, buttonClickCallback: Product.PageClick });
+            }
+        });
+    },
     AutoProduct: function (item, target) {
         $(item).autocomplete({
             paramName: "productName",

@@ -104,5 +104,16 @@ namespace Git.Storage.Web.Areas.Product.Controllers
             ViewBag.Locals = Locals;
             return View();
         }
+        /********************************************销售管理*****************************************************/
+        /// <summary>
+        /// 销售管理列表页面
+        /// </summary>
+        /// <returns></returns>
+        [LoginFilter]
+        public ActionResult Sale()
+        {
+            ViewBag.Category = BaseHelper.GetProductCategory(string.Empty);
+            return View();
+        }
     }
 }
