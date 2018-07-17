@@ -72,21 +72,20 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="span3">
+                                                @*<div class="span3">
                                                     <div class="control-group">
-                                                        <!--control-group error-->
                                                         <label class="control-label" for="txtContractOrder">关联订单号</label>
                                                         <div class="controls">
                                                             <input type="text" id="txtContractOrder" name="txtContractOrder" class="span12" placeholder="">
                                                             <span class="help-block"></span>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div>*@
                                                 <div class="span3">
                                                     <div class="control-group">
                                                         <label class="control-label" for="txtOrderTime">发货日期 </label>
                                                         <div class="controls">
-                                                            <input type="text" id="txtOrderTime" name="txtOrderTime" class="span12" placeholder="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})">
+                                                            <input type="text" id="txtOrderTime" name="txtOrderTime" class="span12" placeholder="默认是出库时间" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd:HH:mm:ss' })">
                                                             <span class="help-block"></span>
                                                         </div>
                                                     </div>
@@ -162,6 +161,31 @@
                                                 </div>
                                                 <div class="span3">
                                                     <div class="control-group">
+                                                        <label class="control-label" for="txtTimeMainTain">维护期限</label>
+                                                        <div class="controls">
+                                                            <input type="text" id="txtTimeMainTain" name="txtTimeMainTain" class="span12" placeholder="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+                                                            <span class="help-block"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="span3">
+                                                    <div class="control-group">
+                                                        <label class="control-label" for="txtProtectedWay">维护次数</label>
+                                                        <div class="controls">
+                                                            <input type="text" id="txtProtectedWaySecond" name="txtProtectedSecond" class="span12" placeholder="" value="1" />
+                                                            <select name="UnitProtected" id="UnitProtected" class="span12">
+                                                                <option value="年">年</option>
+                                                                <option value="月" selected="selected">月</option>
+                                                                <option value="周">周</option>
+                                                            </select>
+                                                            <input type="text" id="txtProtectedLSecond" name="txtProtectedLSecond" class="span12" placeholder="" value="1" />
+                                                            次
+                                                            <span class="help-block"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="span3">
+                                                    <div class="control-group">
                                                         <label class="control-label" for="txtRemark">备注</label>
                                                         <div class="controls">
                                                             <input type="text" id="txtRemark" name="txtRemark" class="span12" placeholder="" />
@@ -172,6 +196,9 @@
                                                 <div class="span3">
                                                     <input type="checkbox" id="txtIsSettlement" name="txtIsSettlement" />&nbsp; 已结算
                                                 </div>
+                                                @*<div class="span3">
+                                                    <input type="checkbox" id="txtIsSettlement" name="txtIsSettlement" />&nbsp; 已结算
+                                                </div>*@
                                                 <div class="span3 invisible">
                                                     <div class="control-group">
                                                         <label class="control-label" for="ddlProductType">出库产品类型</label>
@@ -196,8 +223,8 @@
                                             <th class="hidden-480">产品条码</th>
                                             <th class="hidden-480">产品编号</th>
                                             <th class="hidden-480">批次</th>
-                                            @*<th class="hidden-480">单价</th>
-                                            <th class="hidden-480">总价</th>*@
+                                            <th class="hidden-480">单价</th>
+                                            <th class="hidden-480">总价</th>
                                             <th class="hidden-480">规格</th>
                                             <th class="hidden-480">出库数</th>
                                             <th class="hidden-480">库位</th>
@@ -209,7 +236,7 @@
 
                                 <div class="form-actions formBtn">
                                     @*<button type="button" class="btn btn-primary" onclick="orderProduct.SelectOrder()"><i class="icon-plus"></i>订单出货</button>*@
-                                    <button type="button" class="btn btn-primary" onclick="orderProduct.SelectDialog()"><i class="icon-plus"></i>新增产品</button>
+                                    <button type="button" class="btn btn-primary" onclick="orderProduct.SselectDialog()"><i class="icon-plus"></i>新增产品</button>
                                     <button type="button" class="btn btn-primary" onclick="orderProduct.Add()"><i class="icon-ok"></i>保存</button>
                                     <button type="button" class="btn" onclick="orderProduct.Cancel()">取消</button>
                                 </div>
@@ -225,7 +252,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             orderProduct.Load();
-            orderProduct.LoadDetail();
+            orderProduct.LoadSDetail();
         });
     </script>
 </body>

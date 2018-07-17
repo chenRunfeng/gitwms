@@ -77,6 +77,7 @@
     <Compile Include="Bad\Proc_AuditeBadReportDataAccess.cs" />
     <Compile Include="Bad\Proc_BadTOP10NumDataAccess.cs" />
     <Compile Include="Base\AdminDataAccess.cs" />
+    <Compile Include="Base\PretenctedDataAccess.cs" />
     <Compile Include="Base\MeasureDataAccess.cs" />
     <Compile Include="Base\MeasureRelDataAccess.cs" />
     <Compile Include="Base\SequenceDataAccess.cs" />

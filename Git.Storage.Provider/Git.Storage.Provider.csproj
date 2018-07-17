@@ -84,6 +84,7 @@
     <Compile Include="Base\DepartProvider.cs" />
     <Compile Include="Base\MeasureProvider.cs" />
     <Compile Include="Base\PowerProvider.cs" />
+    <Compile Include="Base\PretenctedProvider.cs" />
     <Compile Include="Base\SequenceProvider.cs" />
     <Compile Include="Base\SysResourceProvider.cs" />
     <Compile Include="Base\SysRoleProvider.cs" />

@@ -145,6 +145,6 @@ namespace Git.Storage.Provider
         /// </summary>
         public static string JOOSHOW_REPORTPARAM_CACHE = "JOOSHOW_REPORTPARAM_CACHE";
 
-
+        public static string SALE_CACHE = "SALE_CACHE";
     }
 }

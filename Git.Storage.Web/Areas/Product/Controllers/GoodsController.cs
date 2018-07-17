@@ -61,7 +61,16 @@ namespace Git.Storage.Web.Areas.Product.Controllers
             ViewBag.Category = BaseHelper.GetProductCategory(string.Empty);
             return View();
         }
-
+        /// <summary>
+        /// 百分比列表页面
+        /// </summary>
+        /// <returns></returns>
+        [LoginFilter]
+        public ActionResult Percentage()
+        {
+            ViewBag.Category = BaseHelper.GetProductCategory(string.Empty);
+            return View();
+        }
         /// <summary>
         /// 产品编辑或添加页面
         /// </summary>
@@ -93,7 +102,38 @@ namespace Git.Storage.Web.Areas.Product.Controllers
             return View();
 
         }
-		/// <summary>
+        /// <summary>
+        /// 产品编辑或添加页面
+        /// </summary>
+        /// <returns></returns>
+        [LoginFilter]
+        public ActionResult AddDetail(string snNum)
+        {
+            ProductEntity entity = null;
+            if (!snNum.IsEmpty())
+            {
+                ProductProvider provider = new ProductProvider();
+                entity = provider.GetProductBySn(snNum);
+                ViewBag.Category = BaseHelper.GetProductCategory(entity.CateNum);
+                ViewBag.Storage = LocalHelper.GetStorageNumList(entity.StorageNum);
+                ViewBag.Local = LocalHelper.GetLocalNumList(entity.StorageNum, entity.DefaultLocal);
+                ViewBag.Customer = BaseHelper.GetCustomerList(entity.CusNum);
+                ViewBag.Goods = entity;
+                ViewBag.Unit = BaseHelper.GetMeasureNameList(entity.UnitNum);
+            }
+            else
+            {
+                ViewBag.Goods = new ProductEntity();
+                ViewBag.Category = BaseHelper.GetProductCategory(string.Empty);
+                ViewBag.Storage = LocalHelper.GetStorageNumList(string.Empty);
+                ViewBag.Local = LocalHelper.GetLocalNumList(string.Empty, string.Empty);
+                ViewBag.Customer = BaseHelper.GetCustomerList(string.Empty);
+                ViewBag.Unit = BaseHelper.GetMeasureNameList(string.Empty);
+            }
+            return View();
+
+        }
+        /// <summary>
         /// 选择产品视图
         /// </summary>
         /// <returns></returns>

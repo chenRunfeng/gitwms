@@ -57,7 +57,22 @@ namespace Git.Storage.Provider.OutStorage
             pageInfo.RowCount = entity.RecordCount;
             return listResult;
         }
-
+        /// <summary>
+        /// 出库报表
+        /// </summary>
+        /// <param name="queryTime"></param>
+        /// <param name="pageInfo"></param>
+        /// <param name="storageNum"></param>
+        /// <returns></returns>
+        public List<OutStorageEntity> GetByOrderNum(string ordernum)
+        {
+            
+            OutStorageEntity entity = new OutStorageEntity();
+            entity.IncludeAll();
+            entity.Where(a=>a.OrderNum==ordernum);
+            List<OutStorageEntity> listResult = this.OutStorage.GetList(entity);
+            return listResult;
+        }
         /// <summary>
         /// 数量排名前十的客户产品数
         /// </summary>

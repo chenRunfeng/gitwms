@@ -43,9 +43,13 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
             string Address = WebUtil.GetFormValue<string>("Address", string.Empty);
             string ContactName = WebUtil.GetFormValue<string>("ContactName", string.Empty);
             string Phone = WebUtil.GetFormValue<string>("Phone", string.Empty);
+            string ProtectedWay = WebUtil.GetFormValue<string>("ProtectedWay",string.Empty);
+            DateTime TimeMainTain = WebUtil.GetFormValue<DateTime>("TimeMainTain");
+            DateTime OrderTime = WebUtil.GetFormValue<DateTime>("OrderTime");
             DateTime SendDate = WebUtil.GetFormValue<DateTime>("SendDate", DateTime.Now);
+            string IsSettlement = WebUtil.GetFormValue<string>("IsSettlement",string.Empty);
             string Remark = WebUtil.GetFormValue<string>("Remark", string.Empty);
-
+            string PayWay = WebUtil.GetFormValue<string>("PayWay",string.Empty);
             OutStorageEntity entity = new OutStorageEntity();
             entity.OrderNum = OrderNum.IsEmpty() ? SequenceProvider.GetSequence(typeof(OutStorageEntity)) : OrderNum;
             entity.OutType = OutType;
@@ -71,7 +75,14 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
             entity.EquipmentCode = string.Empty;
             entity.Remark = Remark;
             entity.StorageNum = this.DefaultStore;
-
+            entity.TimeMainTain = TimeMainTain;
+            entity.ProtectedWay = ProtectedWay;
+            if(TimeMainTain!=DateTime.MinValue)
+            {
+                entity.PayWay = PayWay;
+            }
+            entity.OrderTime = OrderTime;
+            entity.IsSettlement = IsSettlement;
             List<OutStoDetailEntity> list = Session[CacheKey.TEMPDATA_CACHE_OUTSTORDETAIL] as List<OutStoDetailEntity>;
             if (list.IsNullOrEmpty())
             {
@@ -137,8 +148,8 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
                             entity.IsPick = (int)EBool.No;
                             entity.Size = product.Size.IsEmpty() ? "" : product.Size;
                             entity.RealNum = 0;
-                            entity.OutPrice = product.InPrice;
-                            entity.Amount = product.InPrice * entity.Num;
+                            entity.OutPrice =(product.AvgPrice/100+1)*item.InPrice;
+                            entity.Amount = entity.OutPrice * entity.Num;
                             entity.CreateTime = DateTime.Now;
                             ListCache.Add(entity);
                         }
@@ -146,8 +157,8 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
                         {
                             OutStoDetailEntity entity = ListCache.First(a => a.ProductNum == item.ProductNum && a.BatchNum == item.BatchNum && a.LocalNum == item.LocalNum);
                             entity.Num += item.Num;
-                            entity.OutPrice = product.InPrice;
-                            entity.Amount = product.InPrice * entity.Num;
+                            entity.OutPrice = (product.AvgPrice/100+1)*item.InPrice;
+                            entity.Amount = entity.OutPrice * entity.Num;
                             entity.CreateTime = DateTime.Now;
                         }
                     }
@@ -175,7 +186,21 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
             this.ReturnJson.AddProperty("Data", new JsonObject(json));
             return Content(this.ReturnJson.ToString());
         }
-
+        /// <summary>
+        /// 根据产品的条码编号查询该产品的库存情况
+        /// </summary>
+        /// <returns></returns>
+        [LoginAjaxFilter]
+        public ActionResult GetSaleProductList()
+        {
+            string BarCode = WebUtil.GetFormValue<string>("BarCode", string.Empty);
+            LocalProductProvider provider = new LocalProductProvider();
+            List<LocalProductEntity> listResult = provider.GetList(BarCode);
+            listResult = listResult.IsNull() ? new List<LocalProductEntity>() : listResult;
+            string json = ConvertJson.ListToJson<LocalProductEntity>(listResult, "List");
+            this.ReturnJson.AddProperty("Data", new JsonObject(json));
+            return Content(this.ReturnJson.ToString());
+        }
         /// <summary>
         /// 加载出库产品内存中的详细
         /// </summary>

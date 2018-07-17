@@ -71,7 +71,7 @@ namespace Git.Storage.Provider
         public ISysRole SysRole { get { return new SysRoleDataAccess(); } }
 
         public IAdmin Admin { get { return new AdminDataAccess(); } }
-
+        public IPretencted Pretencted { get { return new PretenctedDataAccess(); } }
         public ISysResource SysResource { get { return new SysResourceDataAccess(); } }
 
         public ISysRelation SysRelation { get { return new SysRelationDataAccess(); } }

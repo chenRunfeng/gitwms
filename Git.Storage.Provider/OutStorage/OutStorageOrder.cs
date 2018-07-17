@@ -190,7 +190,12 @@ namespace Git.Storage.Provider.OutStorage
             }
             return string.Empty;
         }
-
+        public string Remind(PretenctedEnitity entity)
+        {
+                entity.IncludeStatus(true).IncludeRemark(true).Where(a => a.ID== entity.ID);
+                int line = this.Pretencted.Update(entity);
+                return line > 0 ? "1000" : string.Empty;
+        }
         /// <summary>
         /// 打印单据
         /// </summary>

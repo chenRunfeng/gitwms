@@ -19,6 +19,24 @@ namespace Git.Storage.Provider.Store
 
         public LocalProductProvider() { }
 
+        ///// <summary>
+        ///// 根据产品条码或者产品编号或者产品名称搜索库存产品数量以及库存位置
+        ///// 主要用于选择产品的界面中搜索功能。在搜索到相应产品之后查询库存信息
+        ///// </summary>
+        ///// <returns></returns>
+        //public List<LocalProductEntity> GetList(string barCode)
+        //{
+        //    LocalProductEntity entity = new LocalProductEntity();
+        //    entity.IncludeAll();
+        //    ProductEntity ProEntity = new ProductEntity();
+        //    ProEntity.Include(a => new {Size = a.Size, InPrice = a.InPrice, AvgPrice=a.AvgPrice});
+        //    entity.Left<ProductEntity>(ProEntity, new Params<string, string>() { Item1 = "ProductNum", Item2 = "SnNum" });
+        //    entity.Where(a => a.BarCode == barCode);
+        //    entity.OrderBy(a => a.ID, EOrderBy.DESC);
+        //    List<LocalProductEntity> listResult = this.LocalProduct.GetList(entity);
+        //    return listResult;
+        //}
+
         /// <summary>
         /// 根据产品条码或者产品编号或者产品名称搜索库存产品数量以及库存位置
         /// 主要用于选择产品的界面中搜索功能。在搜索到相应产品之后查询库存信息
@@ -27,13 +45,27 @@ namespace Git.Storage.Provider.Store
         public List<LocalProductEntity> GetList(string barCode)
         {
             LocalProductEntity entity = new LocalProductEntity();
+            ProductEntity ProEntity=new ProductEntity();
             entity.IncludeAll();
-            ProductEntity ProEntity = new ProductEntity();
-            ProEntity.Include(a => new { Size = a.Size, InPrice = a.InPrice });
-            entity.Left<ProductEntity>(ProEntity, new Params<string, string>() { Item1 = "ProductNum", Item2 = "SnNum" });
+            ProEntity.IncludeAll();
+            ProEntity.Where(p=>p.BarCode==barCode);
+            ProductEntity proe = this.Product.GetList(ProEntity).FirstOrDefault();
+            InStorDetailEntity InStorE = new InStorDetailEntity();
+            InStorE.Include(a => new { InPrice = a.InPrice });
+            entity.Left<InStorDetailEntity>(InStorE, new Params<string, string>() { Item1 = "InstoreID", Item2 = "ID" });
             entity.Where(a => a.BarCode == barCode);
             entity.OrderBy(a => a.ID, EOrderBy.DESC);
             List<LocalProductEntity> listResult = this.LocalProduct.GetList(entity);
+            //List<LocalProductEntity> listP = new List<LocalProductEntity>();
+            for (int i=0;i<listResult.Count;i++)
+            {
+                if(proe!=null)
+                {
+                    double sale = listResult[i].InPrice * (proe.AvgPrice/100);
+                    listResult[i].AvgPrice = sale;
+                    listResult[i].Size = proe.Size;
+                }
+            }
             return listResult;
         }
 

@@ -277,5 +277,52 @@ namespace Git.Storage.Web.Areas.Client.Controllers
             return Content(this.ReturnJson.ToString());
         }
 
+        /// <summary>
+        /// 增加交易情况
+        /// </summary>
+        /// <returns></returns>
+        [LoginAjaxFilter]
+        public ActionResult AddSaleSituation()
+        {
+            string StartTime = WebUtil.GetFormValue<string>("StartTime", string.Empty);
+            string SaleSituation = WebUtil.GetFormValue<string>("SaleSituation", string.Empty);           
+            string GoodSituation = WebUtil.GetFormValue<string>("GoodSituation", string.Empty);
+            string Leader = WebUtil.GetFormValue<string>("Leader", string.Empty);
+            string Registrant = WebUtil.GetFormValue<string>("Registrant", string.Empty);
+
+            //InStorDetailEntity entity = new InStorDetailEntity();
+            //entity.SnNum = SequenceProvider.GetSequence(typeof(InStorDetailEntity));
+            //entity.OrderNum = string.Empty;
+            //entity.ProductName = ProductName;
+            //entity.BarCode = BarCode;
+            //entity.ProductNum = ProductNum;
+            //entity.Num = Num;
+            //entity.IsPick = (int)EBool.No;
+            //entity.RealNum = 0;
+            //entity.InPrice = InPrice;
+            //entity.CreateTime = DateTime.Now;
+            //entity.LocalNum = LocalNum;
+            //LocationEntity localtion = new LocationProvider().GetSingleByNumCache(LocalNum);
+            //if (localtion != null)
+            //{
+            //    entity.LocalName = new LocationProvider().GetSingleByNumCache(LocalNum).LocalName;
+            //}
+            //else
+            //{
+            //    entity.LocalName = "";
+            //}
+            //entity.Amount = entity.InPrice * entity.Num;
+            //entity.StorageNum = this.DefaultPStore;
+            //entity.Size = Size;
+            //entity.BatchNum = BatchNum;
+            //entity.TotalPrice = entity.Num * entity.InPrice;
+            //List<InStorDetailEntity> list = Session[CacheKey.TEMPDATA_CACHE_INSTORDETAIL] as List<InStorDetailEntity>;
+            //list = list.IsNull() ? new List<InStorDetailEntity>() : list;
+            //list.Add(entity);
+            //Session[CacheKey.TEMPDATA_CACHE_INSTORDETAIL] = list;
+
+            return Content(string.Empty);
+        }
+
     }
 }

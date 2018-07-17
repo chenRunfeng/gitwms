@@ -14,12 +14,17 @@ using Git.Storage.Web.Lib.Filter;
 using System.Net.Http;
 using Git.Framework.Resource;
 using Git.Storage.Provider.Store;
+using Git.Storage.Provider.Client;
 using Git.Storage.Entity.Store;
+using Git.Storage.Entity.OutStorage;
+using Git.Storage.Provider;
 
 namespace Git.Storage.Web.Controllers
 {
     public class HomeController : MasterPage
     {
+        const string SHANGWUYUANROLE = "000007";
+        const string CANGGUANYUANROLE = "000001";    
         public ActionResult Index()
         {
             string url = WebUtil.GetQueryStringValue<string>("returnurl", string.Empty);
@@ -235,22 +240,59 @@ namespace Git.Storage.Web.Controllers
             ProductProvider p = new ProductProvider();
             List<ProductEntity> prolist = p.GetList();
             ViewBag.role =this.LoginUser.RoleNum;
-            List<ProductEntity> list = new List<ProductEntity>();
-            foreach(var pro in prolist)
+            if(this.LoginUser.RoleNum==CANGGUANYUANROLE)
             {
-                if(pro.LocalProductNum>=pro.MaxNum)
+                List<ProductEntity> list = new List<ProductEntity>();
+                OutStorageEntity entity = new OutStorageEntity();
+                entity.Where(a => a.Status == 1);
+                foreach (var pro in prolist)
                 {
-                    //pro.ProductName
-                    pro.Remark = "1";
-                    list.Add(pro);
+                    if (pro.LocalProductNum >= pro.MaxNum)
+                    {
+                        //pro.ProductName
+                        pro.Remark = "1";
+                        list.Add(pro);
+                    }
+                    if (pro.LocalProductNum <= pro.MinNum)
+                    {
+                        pro.Remark = "2";
+                        list.Add(pro);
+                    }
                 }
-                if(pro.LocalProductNum<=pro.MinNum)
+                ViewBag.produtlist = list;
+                PageInfo page = new PageInfo() { PageIndex = 1, PageSize = 1000 };
+                Bill<OutStorageEntity, OutStoDetailEntity> bill = new Provider.OutStorage.OutStorageOrder();
+                List<OutStorageEntity> listResult = bill.GetList(entity, ref page);
+                listResult = listResult == null ? new List<OutStorageEntity>() : listResult;
+                AdminProvider adminpro = new AdminProvider();
+                foreach (var item in listResult)
                 {
-                    pro.Remark = "2";
-                    list.Add(pro);
+                    AdminEntity admin = adminpro.GetAdmin(item.CreateUser);
+                    item.EquipmentCode = admin.RealName;
+                    item.Remark = "审核中";
                 }
+                ViewBag.storglist = listResult;
             }
-            ViewBag.produtlist = list;
+            if (this.LoginUser.RoleNum == SHANGWUYUANROLE)
+            {
+                PretenctedEnitity preenity = new PretenctedEnitity();
+                preenity.IncludeAll();
+                PretenctedProvider prepro = new PretenctedProvider();
+                preenity.Where(a=>a.Status==0);                               
+                CustomerProvider cp = new CustomerProvider();
+                List<PretenctedEnitity> listresult= prepro.GetList(preenity);
+                foreach(var item in listresult)
+                {
+                    if(item.Status==0)
+                    {
+                        item.strStatus = "未通知维护";
+                        CustomerEntity cusentity = cp.GetSingleCustomer(item.CusNum);
+                        item.CusName = cusentity.CusName;
+                        item.RemarkLevel = cusentity.RemarkLevel;
+                    }
+                }
+                ViewBag.storglist = listresult;
+            }
             return View();
         }
         [LoginFilter(false,false)]

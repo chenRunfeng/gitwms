@@ -49,6 +49,7 @@
     <Compile Include="Base\IAdmin.cs" />
     <Compile Include="Base\IMeasure.cs" />
     <Compile Include="Base\IMeasureRel.cs" />
+    <Compile Include="Base\IPretencted.cs" />
     <Compile Include="Base\ISequence.cs" />
     <Compile Include="Base\ISysDepart.cs" />
     <Compile Include="Base\ISysRelation.cs" />

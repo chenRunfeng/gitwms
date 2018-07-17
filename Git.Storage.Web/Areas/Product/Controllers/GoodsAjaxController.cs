@@ -497,6 +497,37 @@ namespace Git.Storage.Web.Areas.Product.Controllers
 
             }
         }
-
+        /// <summary>
+        /// 销售类别分类
+        /// </summary>
+        /// <returns></returns>
+        [LoginAjaxFilter]
+        public ActionResult GetSList()
+        {
+            string ProductName = WebUtil.GetFormValue<string>("ProductName", string.Empty);
+            int pageIndex = WebUtil.GetFormValue<int>("pageIndex", 0);
+            int pageSize = WebUtil.GetFormValue<int>("pageSize", 0);
+            string CateNum = WebUtil.GetFormValue<string>("CateNum", string.Empty);
+            ProductProvider provider = new ProductProvider();
+            ProductEntity entity = new ProductEntity();
+            if (!ProductName.IsEmpty())
+            {
+                entity.Begin<ProductEntity>()
+                 .Where<ProductEntity>("ProductName", ECondition.Like, "%" + ProductName + "%")
+                 .Or<ProductEntity>("SnNum", ECondition.Like, "%" + ProductName + "%")
+                 .Or<ProductEntity>("BarCode", ECondition.Like, "%" + ProductName + "%")
+                 .End<ProductEntity>();
+            }
+            if (!CateNum.IsEmpty())
+            {
+                entity.Where<ProductEntity>("CateNum", ECondition.Eth, CateNum);
+            }
+            PageInfo pageInfo = new PageInfo() { PageIndex = pageIndex, PageSize = pageSize };
+            List<ProductEntity> listResult = provider.GetList(entity, ref pageInfo);
+            string json = ConvertJson.ListToJson<ProductEntity>(listResult, "List");
+            this.ReturnJson.AddProperty("Data", new JsonObject(json));
+            this.ReturnJson.AddProperty("RowCount", pageInfo.RowCount);
+            return Content(this.ReturnJson.ToString());
+        }
     }
 }

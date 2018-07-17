@@ -19,6 +19,8 @@ using Git.Storage.Entity.Store;
 using Git.Storage.Entity.Order;
 using Git.Storage.Provider.Order;
 using Git.Framework.Resource;
+using Git.Storage.Provider.Base;
+using Git.Storage.Entity.Base;
 
 namespace Git.Storage.Web.Areas.OutStorage.Controllers
 {
@@ -38,13 +40,38 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
             ViewBag.BarCode = BarCode;
             return View();
         }
-
+        /// <summary>
+        /// 添加出库单界面
+        /// </summary>
+        /// <returns></returns>
+        [LoginFilter]
+        public ActionResult SAdd(string BarCode = "0")
+        {
+            Session[CacheKey.TEMPDATA_CACHE_OUTSTORDETAIL] = null;
+            ViewBag.CraterUser = this.LoginUserName;
+            ViewBag.OutType = EnumHelper.GetOptions<EOutType>((int)EOutType.Sell, "请选择出库单类型");
+            ViewBag.ProductType = EnumHelper.GetOptions<EProductType>((int)EProductType.Goods, "请选择出库产品类型");
+            ViewBag.BarCode = BarCode;
+            return View();
+        }
         /// <summary>
         /// 选择出库产品
         /// </summary>
         /// <returns></returns>
         [LoginFilter]
         public ActionResult AddProduct()
+        {
+            //查询成品管理正式库位
+            string storeNum = this.DefaultPStore;
+            ViewBag.LocalOptions = LocalHelper.GetLocalNum(storeNum, ELocalType.Normal, string.Empty);
+            return View();
+        }
+        /// <summary>
+        /// 选择出库的产品
+        /// </summary>
+        /// <returns></returns>
+        [LoginFilter]
+        public ActionResult SAddProduct()
         {
             //查询成品管理正式库位
             string storeNum = this.DefaultPStore;
@@ -103,7 +130,174 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
             ViewBag.Flag = flag;
             return View();
         }
+        /// <summary>
+        /// 出库单详细页面
+        /// </summary>
+        /// <returns></returns>
+        [LoginFilter]
+        public ActionResult SDetail()
+        {
+            string orderNum = WebUtil.GetQueryStringValue<string>("orderNum", string.Empty);
+            string flag = WebUtil.GetQueryStringValue<string>("flag", string.Empty);
+            Bill<OutStorageEntity, OutStoDetailEntity> bill = new OutStorageOrder();
+            OutStorageEntity entity = new OutStorageEntity();
+            entity.OrderNum = orderNum;
+            entity = bill.GetOrder(entity);
+            entity = entity.IsNull() ? new OutStorageEntity() : entity;
+            ViewBag.Entity = entity;
+            ViewBag.OutType = EnumHelper.GetEnumDesc<EOutType>(entity.OutType);
+            ViewBag.Status = EnumHelper.GetEnumDesc<EAudite>(entity.Status);
+            OutStoDetailEntity detail = new OutStoDetailEntity();
+            detail.OrderNum = orderNum;
+            List<OutStoDetailEntity> listResult = bill.GetOrderDetail(detail);
+            listResult = listResult.IsNull() ? new List<OutStoDetailEntity>() : listResult;
 
+            ProductProvider provider = new ProductProvider();
+            List<ProductEntity> list = provider.GetListByCache();
+            list = list.IsNull() ? new List<ProductEntity>() : list;
+            listResult.ForEach(a =>
+            {
+                ProductEntity product = null;
+                if (a.BarCode.IsEmpty())
+                {
+                    product = list.SingleOrDefault(b => b.SnNum == a.ProductNum);
+                }
+                else
+                {
+                    product = list.SingleOrDefault(b => b.SnNum == a.ProductNum && b.BarCode == a.BarCode);
+                }
+                if (product.IsNotNull())
+                {
+                    a.Size = product.Size.IsEmpty() ? "" : product.Size;
+                }
+                else
+                {
+                    a.Size = "";
+                }
+            });
+            ViewBag.Detail = listResult;
+            ViewBag.Flag = flag;
+            return View();
+        }
+        /// <summary>
+        /// 出库单详细页面
+        /// </summary>
+        /// <returns></returns>
+        [LoginFilter]
+        public ActionResult SRDetail()
+        {
+            //string orderNum = WebUtil.GetQueryStringValue<string>("orderNum", string.Empty);
+            string ID = WebUtil.GetQueryStringValue<string>("ID", string.Empty);
+            int id = Convert.ToInt32(ID);
+            string flag = WebUtil.GetQueryStringValue<string>("flag", string.Empty);
+            PretenctedProvider pd = new PretenctedProvider();
+            PretenctedEnitity penitity = pd.GetEnitityById(id);
+            Bill<OutStorageEntity, OutStoDetailEntity> bill = new OutStorageOrder();
+            OutStorageEntity entity = new OutStorageEntity();
+            entity.OrderNum = penitity.OrderNum;
+            entity = bill.GetOrder(entity);
+            entity = entity.IsNull() ? new OutStorageEntity() : entity;
+            ViewBag.Entity = entity;
+            ViewBag.OutType = EnumHelper.GetEnumDesc<EOutType>(entity.OutType);
+            ViewBag.Status = EnumHelper.GetEnumDesc<EAudite>(entity.Status);
+            OutStoDetailEntity detail = new OutStoDetailEntity();
+            detail.OrderNum = penitity.OrderNum;
+            List<OutStoDetailEntity> listResult = bill.GetOrderDetail(detail);
+            listResult = listResult.IsNull() ? new List<OutStoDetailEntity>() : listResult;
+            ViewBag.nextprotectedtime = "";
+            if (entity.ProtectedWay.Length > 0)
+            {
+                int year = Convert.ToInt32(entity.ProtectedWay.Substring(0, 1));
+                int frequency = Convert.ToInt32(entity.ProtectedWay.Substring(2, 1));
+                if (entity.ProtectedWay.Contains("年"))
+                {
+                    ViewBag.nextprotectedtime=penitity.ProtectedTime.AddYears(1);
+                }
+                else if (entity.ProtectedWay.Contains("月"))
+                {
+                    ViewBag.nextprotectedtime = penitity.ProtectedTime.AddMonths(1);
+                }
+            }
+            ViewBag.penitity = penitity;
+            ProductProvider provider = new ProductProvider();
+            List<ProductEntity> list = provider.GetListByCache();
+            list = list.IsNull() ? new List<ProductEntity>() : list;
+            listResult.ForEach(a =>
+            {
+                ProductEntity product = null;
+                if (a.BarCode.IsEmpty())
+                {
+                    product = list.SingleOrDefault(b => b.SnNum == a.ProductNum);
+                }
+                else
+                {
+                    product = list.SingleOrDefault(b => b.SnNum == a.ProductNum && b.BarCode == a.BarCode);
+                }
+                if (product.IsNotNull())
+                {
+                    a.Size = product.Size.IsEmpty() ? "" : product.Size;
+                }
+                else
+                {
+                    a.Size = "";
+                }
+            });
+            ViewBag.Detail = listResult;
+            ViewBag.Flag = flag;
+            return View();
+        }
+
+        /// <summary>
+        /// 出库单详细页面
+        /// </summary>
+        /// <returns></returns>
+        [LoginFilter]
+        public ActionResult AddDetail()
+        {
+            string orderNum = WebUtil.GetQueryStringValue<string>("orderNum", string.Empty);
+            string flag = WebUtil.GetQueryStringValue<string>("flag", string.Empty);
+            Bill<OutStorageEntity, OutStoDetailEntity> bill = new OutStorageOrder();
+            OutStorageEntity entity = new OutStorageEntity();
+            entity.OrderNum = orderNum;
+            entity = bill.GetOrder(entity);
+            entity = entity.IsNull() ? new OutStorageEntity() : entity;
+            ViewBag.Entity = entity;
+            ViewBag.OutType = EnumHelper.GetEnumDesc<EOutType>(entity.OutType);
+            ViewBag.Status = EnumHelper.GetEnumDesc<EAudite>(entity.Status);
+
+
+            OutStoDetailEntity detail = new OutStoDetailEntity();
+            detail.OrderNum = orderNum;
+            List<OutStoDetailEntity> listResult = bill.GetOrderDetail(detail);
+            listResult = listResult.IsNull() ? new List<OutStoDetailEntity>() : listResult;
+
+            ProductProvider provider = new ProductProvider();
+            List<ProductEntity> list = provider.GetListByCache();
+            list = list.IsNull() ? new List<ProductEntity>() : list;
+            listResult.ForEach(a =>
+            {
+                ProductEntity product = null;
+                if (a.BarCode.IsEmpty())
+                {
+                    product = list.SingleOrDefault(b => b.SnNum == a.ProductNum);
+                }
+                else
+                {
+                    product = list.SingleOrDefault(b => b.SnNum == a.ProductNum && b.BarCode == a.BarCode);
+                }
+                if (product.IsNotNull())
+                {
+                    a.Size = product.Size.IsEmpty() ? "" : product.Size;
+                }
+                else
+                {
+                    a.Size = "";
+                }
+            });
+            ViewBag.Detail = listResult;
+            ViewBag.Flag = flag;
+            return View();
+        }
         /// <summary>
         /// 打印送货单
         /// </summary>
@@ -144,6 +338,17 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
         /// <returns></returns>
         [LoginFilter]
         public ActionResult List()
+        {
+            ViewBag.OutType = EnumHelper.GetOptions<EOutType>(0, "请选择出库单类型");
+            ViewBag.ReportNum = ResourceManager.GetSettingEntity("OutOrder_Template").Value;
+            return View();
+        }
+        /// <summary>
+        /// 出库单管理列表页面
+        /// </summary>
+        /// <returns></returns>
+        [LoginFilter]
+        public ActionResult Sale()
         {
             ViewBag.OutType = EnumHelper.GetOptions<EOutType>(0, "请选择出库单类型");
             ViewBag.ReportNum = ResourceManager.GetSettingEntity("OutOrder_Template").Value;
@@ -199,7 +404,55 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
             Session[CacheKey.TEMPDATA_CACHE_OUTSTORDETAIL] = listResult;
             return View();
         }
+        /// <summary>
+        /// 提交出库单编辑界面
+        /// </summary>
+        /// <returns></returns>
+        [LoginFilter]
+        public ActionResult SEdit()
+        {
+            string orderNum = WebUtil.GetQueryStringValue<string>("orderNum", string.Empty);
+            Bill<OutStorageEntity, OutStoDetailEntity> bill = new OutStorageOrder();
+            OutStorageEntity entity = new OutStorageEntity();
+            entity.OrderNum = orderNum;
+            entity = bill.GetOrder(entity);
+            entity = entity.IsNull() ? new OutStorageEntity() : entity;
+            ViewBag.Entity = entity;
+            ViewBag.OutType = EnumHelper.GetOptions<EInType>(entity.OutType, "请选择入库单类型");
+            ViewBag.ProductType = EnumHelper.GetOptions<EProductType>(entity.ProductType, "请选择入库产品类型");
 
+            OutStoDetailEntity detail = new OutStoDetailEntity();
+            detail.OrderNum = orderNum;
+            List<OutStoDetailEntity> listResult = bill.GetOrderDetail(detail);
+            listResult = listResult.IsNull() ? new List<OutStoDetailEntity>() : listResult;
+
+            ProductProvider provider = new ProductProvider();
+            List<ProductEntity> list = provider.GetListByCache();
+            list = list.IsNull() ? new List<ProductEntity>() : list;
+            listResult.ForEach(a =>
+            {
+                ProductEntity product = null;
+                if (a.BarCode.IsEmpty())
+                {
+                    product = list.SingleOrDefault(b => b.SnNum == a.ProductNum);
+                }
+                else
+                {
+                    product = list.SingleOrDefault(b => b.SnNum == a.ProductNum && b.BarCode == a.BarCode);
+                }
+                a.OutPrice = product != null ? product.OutPrice : 0;
+                if (product != null)
+                {
+                    a.Size = product.Size.IsEmpty() ? "" : product.Size;
+                }
+                else
+                {
+                    a.Size = "";
+                }
+            });
+            Session[CacheKey.TEMPDATA_CACHE_OUTSTORDETAIL] = listResult;
+            return View();
+        }
 
         /// <summary>
         /// 根据订单出库

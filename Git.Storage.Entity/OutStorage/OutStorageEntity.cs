@@ -362,6 +362,61 @@ namespace Git.Storage.Entity.OutStorage
             }
             return this;
         }
+        [DataMapping(ColumnName = "TimeMainTain", DbType = DbType.DateTime, Length = 8, CanNull = false, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
+        public DateTime TimeMainTain { get; set; }
+
+        public OutStorageEntity IncludeTimeMainTain(bool flag)
+        {
+            if (flag && !this.ColumnList.Contains("TimeMainTain"))
+            {
+                this.ColumnList.Add("TimeMainTain");
+            }
+            return this;
+        }
+        [DataMapping(ColumnName = "OrderTime", DbType = DbType.DateTime, Length = 8, CanNull = false, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
+        public DateTime OrderTime { get; set; }
+
+        public OutStorageEntity IncludeOrderTime(bool flag)
+        {
+            if (flag && !this.ColumnList.Contains("OrderTime"))
+            {
+                this.ColumnList.Add("OrderTime");
+            }
+            return this;
+        }
+        [DataMapping(ColumnName = "ProtectedWay", DbType = DbType.String, Length = 50, CanNull = false, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
+        public string ProtectedWay { get; set; }
+
+        public OutStorageEntity IncludeProtectedWay(bool flag)
+        {
+            if (flag && !this.ColumnList.Contains("ProtectedWay"))
+            {
+                this.ColumnList.Add("ProtectedWay");
+            }
+            return this;
+        }
+        [DataMapping(ColumnName = "IsSettlement", DbType = DbType.String, Length = 50, CanNull = false, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
+        public string IsSettlement { get; set; }
+
+        public OutStorageEntity IncludeIsSettlement(bool flag)
+        {
+            if (flag && !this.ColumnList.Contains("IsSettlement"))
+            {
+                this.ColumnList.Add("IsSettlement");
+            }
+            return this;
+        }
+        [DataMapping(ColumnName = "PayWay", DbType = DbType.String, Length = 50, CanNull = false, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
+        public string PayWay { get; set; }
+
+        public OutStorageEntity IncludePayWay(bool flag)
+        {
+            if (flag && !this.ColumnList.Contains("PayWay"))
+            {
+                this.ColumnList.Add("PayWay");
+            }
+            return this;
+        }
     }
 
     public partial class OutStorageEntity

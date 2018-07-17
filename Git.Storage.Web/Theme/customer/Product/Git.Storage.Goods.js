@@ -178,7 +178,7 @@ var Product = {
                         Html += "<td>" + item.ProductName + "</td>";
                         Html += "<td>" + item.MinNum + "</td>";
                         Html += "<td>" + item.MaxNum + "</td>";
-                        Html += "<td>" + item.AvgPrice + "</td>";
+                        Html += "<td>" + item.AvgPrice + "%</td>";
                         Html += "<td>" + item.Size + "</td>";
                         Html += "<td>" + item.CateName + "</td>";
                         Html += "<td>" + item.UnitName + "</td>";
@@ -221,13 +221,12 @@ var Product = {
                         Html += "<td>" + item.ProductName + "</td>";
                         Html += "<td>" + item.MinNum + "</td>";
                         Html += "<td>" + item.MaxNum + "</td>";
-                        Html += "<td>" + item.AvgPrice + "</td>";
                         Html += "<td>" + item.Size + "</td>";
                         Html += "<td>" + item.CateName + "</td>";
                         Html += "<td>" + item.UnitName + "</td>";
                         Html += "<td title='" + item.Description + "'>" + git.GetStrSub(item.Description, 10) + "</td>";
                         Html += "<td>";
-                        Html += "<a class=\"icon-edit\" href=\"javascript:void(0)\" onclick=\"Product.Edit('" + item.SnNum + "')\" title=\"编辑\"></a>&nbsp;&nbsp;";
+                        Html += "<a class=\"icon-edit\" href=\"javascript:void(0)\" onclick=\"Product.SEdit('" + item.SnNum + "')\" title=\"编辑\"></a>&nbsp;&nbsp;";
                         Html += "<a class=\"icon-remove\" href=\"javascript:void(0)\" onclick=\"Product.Delete('" + item.SnNum + "')\" title=\"删除\"></a>";
                         Html += "</td>";
                         Html += "</tr>";
@@ -402,11 +401,215 @@ var Product = {
                 return true;
             }
         }
-        if (git.IsEmpty(snNum)) {
-            $.jBox.open("get:/Product/Goods/Detail", "添加产品", 500, 380, { buttons: { "确定": true, "关闭": false }, submit: submit });
-        } else {
-            $.jBox.open("get:/Product/Goods/Detail?snNum=" + snNum, "编辑产品", 500, 380, { buttons: { "确定": true, "关闭": false }, submit: submit });
+        var submit2 = function (v, h, f) {
+            if (v == true) {
+                var SnNum = h.find("#txtSnNum").val();
+                var BarCode = h.find("#txtBarCode").val();
+                var ProductName = h.find("#txtProductName").val();
+                var CateNum = h.find("#ddlCategory option:selected").val();
+                var CateName = h.find("#ddlCategory option:selected").html();
+                var MinNum = h.find("#txtMinNum").val();
+                var MaxNum = h.find("#txtMaxNum").val();
+                var InPrice = h.find("#txtInPrice").val();
+                var OutPrice = h.find("#txtOutPrice").val();
+                var NetWeight = h.find("#txtNetWeight").val();
+                var GrossWeight = h.find("#txtGrossWeight").val();
+                var Unit = h.find("#ddlUnit option:selected").val();
+                var UnitName = h.find("#ddlUnit option:selected").html();
+                var Size = h.find("#txtSize").val();
+                var Description = h.find("#txtDescripte").val();
+                var StorageNum = h.find("#ddlStorage  option:selected").val();
+                var DefaultLocal = h.find("#ddlLocal  option:selected").val();
+                var CusNum = h.find("#ddlCustomer option:selected").val();
+                var CusName = h.find("#ddlCustomer option:selected").html();
+                if (BarCode == undefined || BarCode == "") {
+                    $.jBox.tip("请输入条码编号", "warn");
+                    return false;
+                }
+                if (ProductName == undefined || ProductName == "") {
+                    $.jBox.tip("请输入产品名称", "warn");
+                    return false;
+                }
+                if (CateNum == undefined || CateNum == "") {
+                    $.jBox.tip("请输入产品类型", "warn");
+                    return false;
+                }
+                /*if (MinNum == undefined || MinNum == "") {
+                    $.jBox.tip("请输入预警值下线", "warn");
+                    return false;
+                }
+                if (MaxNum == undefined || MaxNum == "") {
+                    $.jBox.tip("请输入预警值上线", "warn");
+                    return false;
+                }*/
+                //if (AvgPrice == undefined || AvgPrice == "") {
+                //    $.jBox.tip("请输入平均价格", "warn");
+                //    return false;
+                //}
+                if (Unit == undefined || Unit == "") {
+                    $.jBox.tip("请输入单位", "warn");
+                    return false;
+                }
+                AvgPrice = git.IsEmpty(AvgPrice) ? 0 : AvgPrice;
+                InPrice = git.IsEmpty(InPrice) ? 0 : InPrice;
+                OutPrice = git.IsEmpty(OutPrice) ? 0 : OutPrice;
+                MinNum = git.IsEmpty(MinNum) ? 0 : MinNum;
+                MaxNum = git.IsEmpty(MaxNum) ? 0 : MaxNum;
+                var param = {};
+                param["SnNum"] = SnNum;
+                param["BarCode"] = BarCode;
+                param["ProductName"] = ProductName;
+                param["CateNum"] = CateNum;
+                param["CateName"] = CateName;
+                param["MinNum"] = MinNum;
+                param["MaxNum"] = MaxNum;
+                param["AvgPrice"] ="";
+                param["InPrice"] = InPrice;
+                param["OutPrice"] = OutPrice;
+                param["NetWeight"] = NetWeight;
+                param["GrossWeight"] = GrossWeight;
+                param["UnitNum"] = Unit;
+                param["UnitName"] = UnitName;
+                param["Size"] = Size;
+                param["Description"] = Description;
+                param["StorageNum"] = StorageNum;
+                param["DefaultLocal"] = DefaultLocal;
+                param["CusNum"] = CusNum;
+                param["CusName"] = CusName;
+                $.gitAjax({
+                    url: "/GoodsAjax/EditProduct", type: "post", data: { "entity": JSON.stringify(param) }, success: function (result) {
+                        if (result.d == "success") {
+                            if (SnNum == undefined || SnNum == "") {
+                                $.jBox.tip("添加成功", "success");
+                            } else {
+                                $.jBox.tip("编辑成功", "success");
+                            }
+                            Product.PageClick(1);
+                            return true;
+                        } else {
+                            if (SnNum == undefined || SnNum == "") {
+                                $.jBox.tip("添加失败", "error");
+                            }
+                            else {
+                                $.jBox.tip("编辑失败", "error");
+                            }
+                        }
+                    }
+                });
+                return true;
+            } else {
+                return true;
+            }
         }
+        if (git.IsEmpty(snNum)) {
+            $.jBox.open("get:/Product/Goods/AddDetail", "添加产品", 500, 380, { buttons: { "确定": true, "关闭": false }, submit: submit2});
+        } else {
+            $.jBox.open("get:/Product/Goods/Detail?snNum=" + snNum, "编辑产品", 500, 380, { buttons: { "确定": true, "关闭": false }, submit: submit});
+        }
+    },
+    SEdit: function (snNum) {
+        snNum = snNum == undefined ? "" : snNum;
+        var submit = function (v, h, f) {
+            if (v == true) {
+                var SnNum = h.find("#txtSnNum").val();
+                var BarCode = h.find("#txtBarCode").val();
+                var ProductName = h.find("#txtProductName").val();
+                var CateNum = h.find("#ddlCategory option:selected").val();
+                var CateName = h.find("#ddlCategory option:selected").html();
+                var MinNum = h.find("#txtMinNum").val();
+                var MaxNum = h.find("#txtMaxNum").val();
+                var InPrice = h.find("#txtInPrice").val();
+                var OutPrice = h.find("#txtOutPrice").val();
+                var NetWeight = h.find("#txtNetWeight").val();
+                var GrossWeight = h.find("#txtGrossWeight").val();
+                var Unit = h.find("#ddlUnit option:selected").val();
+                var UnitName = h.find("#ddlUnit option:selected").html();
+                var Size = h.find("#txtSize").val();
+                var Description = h.find("#txtDescripte").val();
+                var StorageNum = h.find("#ddlStorage  option:selected").val();
+                var DefaultLocal = h.find("#ddlLocal  option:selected").val();
+                var CusNum = h.find("#ddlCustomer option:selected").val();
+                var CusName = h.find("#ddlCustomer option:selected").html();
+                if (BarCode == undefined || BarCode == "") {
+                    $.jBox.tip("请输入条码编号", "warn");
+                    return false;
+                }
+                if (ProductName == undefined || ProductName == "") {
+                    $.jBox.tip("请输入产品名称", "warn");
+                    return false;
+                }
+                if (CateNum == undefined || CateNum == "") {
+                    $.jBox.tip("请输入产品类型", "warn");
+                    return false;
+                }
+                /*if (MinNum == undefined || MinNum == "") {
+                    $.jBox.tip("请输入预警值下线", "warn");
+                    return false;
+                }
+                if (MaxNum == undefined || MaxNum == "") {
+                    $.jBox.tip("请输入预警值上线", "warn");
+                    return false;
+                }*/
+                //if (AvgPrice == undefined || AvgPrice == "") {
+                //    $.jBox.tip("请输入平均价格", "warn");
+                //    return false;
+                //}
+                if (Unit == undefined || Unit == "") {
+                    $.jBox.tip("请输入单位", "warn");
+                    return false;
+                }
+                AvgPrice = git.IsEmpty(AvgPrice) ? 0 : AvgPrice;
+                InPrice = git.IsEmpty(InPrice) ? 0 : InPrice;
+                OutPrice = git.IsEmpty(OutPrice) ? 0 : OutPrice;
+                MinNum = git.IsEmpty(MinNum) ? 0 : MinNum;
+                MaxNum = git.IsEmpty(MaxNum) ? 0 : MaxNum;
+                var param = {};
+                param["SnNum"] = SnNum;
+                param["BarCode"] = BarCode;
+                param["ProductName"] = ProductName;
+                param["CateNum"] = CateNum;
+                param["CateName"] = CateName;
+                param["MinNum"] = MinNum;
+                param["MaxNum"] = MaxNum;
+                param["AvgPrice"] = "";
+                param["InPrice"] = InPrice;
+                param["OutPrice"] = OutPrice;
+                param["NetWeight"] = NetWeight;
+                param["GrossWeight"] = GrossWeight;
+                param["UnitNum"] = Unit;
+                param["UnitName"] = UnitName;
+                param["Size"] = Size;
+                param["Description"] = Description;
+                param["StorageNum"] = StorageNum;
+                param["DefaultLocal"] = DefaultLocal;
+                param["CusNum"] = CusNum;
+                param["CusName"] = CusName;
+                $.gitAjax({
+                    url: "/GoodsAjax/EditProduct", type: "post", data: { "entity": JSON.stringify(param) }, success: function (result) {
+                        if (result.d == "success") {
+                            if (SnNum == undefined || SnNum == "") {
+                                $.jBox.tip("添加成功", "success");
+                            } else {
+                                $.jBox.tip("编辑成功", "success");
+                            }
+                            Product.PageClick(1);
+                            return true;
+                        } else {
+                            if (SnNum == undefined || SnNum == "") {
+                                $.jBox.tip("添加失败", "error");
+                            }
+                            else {
+                                $.jBox.tip("编辑失败", "error");
+                            }
+                        }
+                    }
+                });
+                return true;
+            } else {
+                return true;
+            }
+        }
+            $.jBox.open("get:/Product/Goods/AddDetail?snNum=" + snNum, "编辑产品", 500, 380, { buttons: { "确定": true, "关闭": false }, submit: submit });
     },
     Delete: function (SnNum) {
         var submit = function (v, h, f) {

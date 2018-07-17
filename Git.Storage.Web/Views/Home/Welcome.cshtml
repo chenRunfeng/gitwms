@@ -43,7 +43,7 @@
                         {
                             <div class="widget">
                                 <div class="widget-title">
-                                    <h4><i class="icon-reorder"></i>预警消息</h4>
+                                    <h4><i class="icon-reorder"></i>库存预警消息</h4>
                                 </div>
                                 <div class="widget-body">
                                     <table class="table table-hover">
@@ -55,19 +55,11 @@
                                         @{
                                             foreach (var item in ViewBag.produtlist)
                                             {
-                                                if (item.Remark == "1")
+                                                if (item.Remark == "2")
                                                 {
                                                     <tr>
                                                         <td>@item.ProductName</td>
-                                                        <td>库存量已达到预警上限</td>
-                                                        <td><button class="btn btn-danger" value="'@item.SnNum'">减仓</button></td>
-                                                    </tr>
-                                                }
-                                                else
-                                                {
-                                                    <tr>
-                                                        <td>@item.ProductName</td>
-                                                        <td>库存量已达到预警下限</td>
+                                                        <td>库存量已达到预警值</td>
                                                         <td><button class="btn btn-primary" onclick="MarginCall('@item.SnNum')">补仓</button></td>
                                                     </tr>
                                                 }
@@ -76,7 +68,99 @@
                                     </table>
                                 </div>
                             </div>
+                            <div class="widget">
+                                <div class="widget-title">
+                                    <h4><i class="icon-reorder"></i>销售出货消息</h4>
+                                </div>
+                                <div class="widget-body">
+                                    <table class="table table-hover">
+                                        <tr>
+                                            <th>出货单号</th>
+                                            <th>申请人</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        @{
+                                            foreach (var item in ViewBag.storglist)
+                                            {
+                                                <tr>
+                                                    <td>@item.OrderNum</td>
+                                                    <td>@item.EquipmentCode</td>
+                                                    <td>@item.Remark</td>
+                                                    <td><a class="icon-ok" href="javascript:void(0)" onclick="User.Audite(2,'@item.OrderNum ')" title="审核"></a>&nbsp;&nbsp;</td>
+                                                </tr>
                                             }
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        }
+                        if (ViewBag.role == "000007")
+                        {
+                            <div class="widget">
+                                <div class="widget-title">
+                                    <h4><i class="icon-reorder"></i>维护提醒</h4>
+                                </div>
+                                <div class="widget-body">
+                                    <table class="table table-hover">
+                                        <tr>
+                                            <th>出货单号</th>
+                                            <th>客户</th>
+                                            <th>客户等级</th>
+                                            <th>维护日期</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        @{
+                                            foreach (var item in ViewBag.storglist)
+                                            {
+                                                <tr>
+                                                    <td>@item.OrderNum</td>
+                                                    <td>@item.CusName</td>
+                                                    <td>@item.RemarkLevel</td>
+                                                    <td>@item.ProtectedTime</td>
+                                                    <td>@item.strStatus</td>
+                                                    <td><a class="icon-ok" href="javascript:void(0)" onclick="User.Remind(2,'@item.ID ')" title="通知维护"></a>&nbsp;&nbsp;</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                                            }
+                        if (ViewBag.role == "000010")
+                        {
+                           <div class="widget">
+                                                    <div class="widget-title">
+                                                        <h4><i class="icon-reorder"></i>销售核对</h4>
+                                                    </div>
+                                                    <div class="widget-body">
+                                                        <table class="table table-hover">
+                                                            <tr>
+                                                                <th>出货单号</th>
+                                                                <th>客户</th>
+                                                                <th>客户等级</th>
+                                                                <th>维护日期</th>
+                                                                <th>状态</th>
+                                                                <th>操作</th>
+                                                            </tr>
+                                                            @{
+                                                                foreach (var item in ViewBag.storglist)
+                                                                {
+                                                                    <tr>
+                                                                        <td>@item.OrderNum</td>
+                                                                        <td>@item.CusName</td>
+                                                                        <td>@item.RemarkLevel</td>
+                                                                        <td>@item.ProtectedTime</td>
+                                                                        <td>@item.strStatus</td>
+                                                                        <td><a class="icon-ok" href="javascript:void(0)" onclick="User.Remind(2,'@item.ID ')" title="通知维护"></a>&nbsp;&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </table>
+                                                    </div>
+                            </div>
+                         }
                     }                               
                 </div>
             </div>

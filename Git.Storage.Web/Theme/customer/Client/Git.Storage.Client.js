@@ -1,5 +1,4 @@
-﻿
-var Customer = {
+﻿var Customer = {
     PageClick: function (pageIndex, pageSize) {
         pageSize = pageSize == undefined ? 10 : pageSize;
         var CusNum = $("#txtCusNum").val();
@@ -29,7 +28,8 @@ var Customer = {
                         Html += "<td>" + git.JsonToDateTimeymd(item.CreateTime) + "</td>";
                         Html += "<td>";
                         Html += "<a class=\"icon-edit\" href=\"javascript:void(0)\" onclick=\"Customer.Add('" + item.CusNum + "','','')\" title=\"编辑\"></a>&nbsp;&nbsp;";
-                        Html += "<a class=\"icon-remove\" href=\"javascript:void(0)\" onclick=\"Customer.Delete('" + item.CusNum + "','')\" title=\"删除\"></a>";
+                        Html += "<a class=\"icon-remove\" href=\"javascript:void(0)\" onclick=\"Customer.Delete('" + item.CusNum + "','')\" title=\"删除\"></a>&nbsp;&nbsp;";
+                        Html += "<a class=\"icon-eye-open\" href=\"javascript:void(0)\" onclick=\"Customer.OpenDetail('" + item.CusNum + "','')\" title=\"交易明细\"></a>";
                         Html += "</td>";
                         Html += "</tr>";
                     });
@@ -70,6 +70,9 @@ var Customer = {
                 var Email = h.find("#txtEmail").val();
                 var Phone = h.find("#txtPhone").val();
                 var Remark = h.find("#txtRemark").val();
+                var RemarkNum = h.find("#txtRemarkNote").val();
+                var RemarkLevel = h.find("#txtRemarkLevel").val();
+                var Note = h.find("#txtNote").val();
                 var TaxpayerNum = h.find("#txtTaxpayerNum").val();
                 if (CusName == undefined || CusName == "") {
                     $.jBox.tip("请输入客户名称", "warn");
@@ -83,6 +86,9 @@ var Customer = {
                 param["Email"] = Email;
                 param["Phone"] = Phone;
                 param["Remark"] = Remark;
+                param["RemarkNum"] = RemarkNum;
+                param["RemarkLevel"] = RemarkLevel;
+                param["Note"] = Note;
                 param["CusType"] = CusType;
                 param["TaxpayerNum"] = TaxpayerNum;
                 $.gitAjax({
@@ -245,9 +251,64 @@ var Customer = {
 
             }
         });
+    },
+    //查看交易明细
+    OpenDetail:function(CusNum){
+        window.location.href = "/Client/Customer/OpenDetail?CusNum=" + CusNum;
+    },
+    SelectDialog: function (CusNum) {
+        var submit = function (v, h, f) {
+            if (v == true) {
+                var StartTime = h.find("#txtStartTime").val();
+                var SaleSituation = h.find("#txtSaleSituation").val();
+                var GoodSituation = h.find("#txtGoodSituation").val();
+                var Leader = h.find("#txtLeader").val();
+                var Registrant = h.find("#txtRegistrant").val();
+                var param = {};
+                param["StartTime"] = StartTime;
+                param["SaleSituation"] = SaleSituation;
+                param["GoodSituation"] = GoodSituation;
+                param["Leader"] = Leader;
+                param["Registrant"] = Registrant;
+                //提交到缓存处理
+                $.gitAjax({
+                    url: "/InStorage/ProductAjax/AddProduct",
+                    data: param,
+                    type: "post",
+                    dataType: "json",
+                    success: function (result) {
+                        orderProduct.LoadDetail();
+                    }
+                });
+            }
+        };
+        $.jBox.open("get:/InStorage/Product/AddProduct?SnNum="+SnNum, "入库产品", 400, 410, {
+            buttons: { "确定": true, "关闭": false }, submit: submit, loaded: function (item) {
+                orderProduct.AutoProduct($(item).find("#txtBarCode"), item);
+                $(item).find("#txtBarCode").ProductDialog({
+                    data: undefined, Mult: false, callBack: function (result) {
+                        $(item).find("#txtBarCode").val(result.BarCode);
+                        $(item).find("#txtProductName").val(result.ProductName);
+                        $(item).find("#txtSize").val(unescape(result.Size));
+                        $(item).find("#txtPrice").val(git.ToDecimal(result.InPrice,2));
+                        $(item).find("#txtLocalQty").val(result.Num);
+                        $(item).find("#hdProductNum").val(result.SnNum);
+                        $(item).find("#spanUnitName1").text(result.UnitName);
+                        $(item).find("#spanUnitName2").text(result.UnitName);
+                    }
+                });
+                $(item).find("#txtLocalName").LocalDialog({
+                    data: undefined, Mult: false, callBack: function (result) {
+                        $(item).find("#txtLocalName").val(result.LocalName);
+                        $(item).find("#txtLocalNum").val(result.LocalNum);
+                    }
+                });
+            }
+        });
+        //$.jBox.open("get:/InStorage/Product/AddProduct?SnNum=" + SnNum, "入库产品", 400, 410, {
+        //    buttons: { "确定": true, "关闭": false }, submit: submit
+        //});
     }
-
-
 }
 
 

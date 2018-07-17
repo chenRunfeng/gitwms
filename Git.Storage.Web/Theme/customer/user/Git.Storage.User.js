@@ -215,6 +215,98 @@
                 $("#divHSearch").slideUp("slow");
             }
         });
+    },
+    Audite: function (flag, orderNum) {
+        // flag 1是查看详细 2是审核
+        var submit = function (v, h, f) {
+            if (flag == 2) {
+                var Reason = h.find("#txtReason").val();
+                var param = {};
+                var status = 0;
+                if (v == 1) {
+                    status = 2
+                } else if (v == 2) {
+                    status = 3;
+                }
+                if (v != 3) {
+                    param["OrderNum"] = orderNum;
+                    param["Status"] = status;
+                    param["Reason"] = Reason;
+                    $.gitAjax({
+                        url: "/OutStorage/ProductManagerAjax/Audit",
+                        data: param,
+                        type: "post",
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.d != undefined) {
+                                if (result.d == "1000") {
+                                    $.jBox.tip("出库单审核成功", "success");
+                                    //location.href = "OutStorage/Product/List";
+                                    //OutStore.PageSClick(1, 20);
+                                } else if (result.d == "1001") {
+                                    $.jBox.tip("出库单不存在", "warn");
+                                } else if (result.d == "1002") {
+                                    $.jBox.tip("出库单已经审核", "warn");
+                                } else if (result.d == "1003") {
+                                    $.jBox.tip("出库产品不存在", "warn");
+                                } else if (result.d == "1004") {
+                                    $.jBox.tip("出库数不满足要求", "warn");
+                                }
+                            } else {
+                                $.jBox.tip("出库单审核失败", "warn");
+                            }
+                        }
+                    });
+                }
+            }
+        };
+        if (flag == 1) {
+            $.jBox.open("get:/OutStorage/Product/Detail?flag=" + flag + "&orderNum=" + orderNum, "出库单详细", 800, 410, { buttons: { "关闭": 3 }, submit: submit });
+        } else if (flag == 2) {
+            $.jBox.open("get:/OutStorage/Product/Detail?flag=" + flag + "&orderNum=" + orderNum, "出库单审核", 800, 410, { buttons: { "审核通过": 1, "审核不通过": 2, "关闭": 3 }, submit: submit });
+        }
+    },
+    Remind: function (flag, orderNum) {
+        // flag 1是查看详细 2是审核
+        var submit = function (v, h, f) {
+            if (flag == 2) {
+                var Remark = h.find("#txtReason").val();
+                var param = {};
+                var status = 0;
+                if (v == 1) {
+                    status = 1
+                } else if (v == 2) {
+                    status = 3;
+                }
+                if (v != 3) {
+                    param["ID"] = orderNum;
+                    param["Status"] = status;
+                    param["Remark"] = Remark;
+                    $.gitAjax({
+                        url: "/OutStorage/ProductManagerAjax/Remind",
+                        data: param,
+                        type: "post",
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.d != undefined) {
+                                if (result.d == "1000") {
+                                    $.jBox.tip("已提醒相关人员维护", "success");
+                                    location.href = "/Home/Welcome";
+                                    //OutStore.PageSClick(1, 20);
+                                } else {
+                                    $.jBox.tip("提醒失败", "warn");
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        };
+        if (flag == 1) {
+            $.jBox.open("get:/OutStorage/Product/SRDetail?flag=" + flag + "&ID=" + orderNum, "维护单详细", 800, 410, { buttons: { "关闭": 3 }, submit: submit });
+        } else if (flag == 2) {
+            $.jBox.open("get:/OutStorage/Product/SRDetail?flag=" + flag + "&ID=" + orderNum, "维护单审核", 800, 410, { buttons: { "确定": 1, "关闭": 3 }, submit: submit });
+        }
     }
 };
 

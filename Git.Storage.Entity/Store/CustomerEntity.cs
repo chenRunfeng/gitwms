@@ -161,8 +161,21 @@ namespace Git.Storage.Entity.Store
 
 		[DataMapping(ColumnName = "Remark", DbType = DbType.String,Length=400,CanNull=true,DefaultValue=null,PrimaryKey=false,AutoIncrement=false,IsMap=true)]
 		public string Remark { get;  set; }
-
-		public CustomerEntity IncludeRemark (bool flag) 
+        [DataMapping(ColumnName = "RemarkNum", DbType = DbType.String, Length = 400, CanNull = true, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
+        public string RemarkNum { get; set; }
+        [DataMapping(ColumnName = "RemarkLevel", DbType = DbType.String, Length = 400, CanNull = true, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
+        public string RemarkLevel { get; set;}
+        public CustomerEntity IncludeRemarkLevel(bool flag)
+        {
+            if (flag && !this.ColumnList.Contains("RemarkLevel"))
+            {
+                this.ColumnList.Add("RemarkLevel");
+            }
+            return this;
+        }
+        [DataMapping(ColumnName = "Note", DbType = DbType.String, Length = 400, CanNull = true, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
+        public string Note { get; set;}
+        public CustomerEntity IncludeRemark (bool flag) 
 		{
 			if (flag && !this.ColumnList.Contains("Remark"))
 			{
@@ -171,7 +184,7 @@ namespace Git.Storage.Entity.Store
 			return this;
 		}
         [DataMapping(ColumnName = "TaxpayerNum", DbType = DbType.String, Length = 50, CanNull = true, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
-        public string TaxpayerNum { get; set; }
+        public string TaxpayerNum { get; set;}
 
         public CustomerEntity IncludeTaxpayerNum(bool flag)
         {

@@ -51,13 +51,13 @@
                 <td class="inorder_tdContent">@ViewBag.Entity.Phone</td>
                 <td class="inorder_tdTitle"><strong>地址</strong></td>
                 <td colspan="3" class="inorder_tdContent">@ViewBag.Entity.Address</td>
-            </tr>
-            <tr class="inorder_tr">
                 <td class="inorder_tdTitle"><strong>维护方式</strong></td>
                 <td class="inorder_tdContent">@ViewBag.Entity.ProtectedWay 次</td>
+            </tr>
+            <tr class="inorder_tr">
                 <td class="inorder_tdTitle"><strong>维护期限</strong></td>
                 @{
-                    if (ViewBag.Entity.TimeMainTain != DateTime.MinValue)
+                    if (ViewBag.Entity.TimeMainTain!=DateTime.MinValue)
                     {
                         <td class="inorder_tdContent">@ViewBag.Entity.TimeMainTain</td>
                     }
@@ -65,19 +65,18 @@
                     {
                         <td class="inorder_tdContent"></td>
                     }
-                }  
+                } 
+                <td class="inorder_tdTitle"><strong>维护时间</strong></td>
+                <td class="inorder_tdContent">@ViewBag.penitity.ProtectedTime</td>
+                <td class="inorder_tdTitle"><strong>下次维护时间</strong></td>
+                <td class="inorder_tdContent">@ViewBag.nextprotectedtime</td>              
             </tr>
             <tr class="inorder_tr">
-                <td class="inorder_tdTitle"><strong>审核意见</strong></td>
+                <td class="inorder_tdTitle"><strong>出库审核意见</strong></td>
+                <td class="inorder_tdContent">@ViewBag.Entity.Reason</td>
+                <td class="inorder_tdTitle"><strong>备注</strong></td>
                 <td class="inorder_tdContent" colspan="5">
-                    @if (ViewBag.Flag == "1")
-                    { 
-                        @ViewBag.Entity.Reason
-                    }
-                    else
-                    {
-                        <textarea id="txtReason"></textarea>
-                    }
+                 <textarea id="txtRemark"></textarea>
                 </td>
             </tr>
         </table>
@@ -88,8 +87,8 @@
                     <th class="hidden-480">产品条码</th>
                     <th class="hidden-480">产品编号</th>
                     <th class="hidden-480">批次</th>
-                    @*<th class="hidden-480">单价</th>
-                    <th class="hidden-480">总价</th>*@
+                    <th class="hidden-480">单价</th>
+                    <th class="hidden-480">总价</th>
                     <th class="hidden-480">规格</th>
                     <th class="hidden-480">出库数</th>
                     <th class="hidden-480">出库库位</th>
@@ -103,8 +102,8 @@
                         <td>@entity.BarCode</td>
                         <td>@entity.ProductNum</td>
                         <td>@entity.BatchNum</td>
-                        @*<td>@entity.OutPrice.ToString("0.00")&nbsp;元</td>
-                        <td>@entity.Amount.ToString("0.00")&nbsp;元</td>*@
+                        <td>@entity.OutPrice.ToString("0.00")&nbsp;元</td>
+                        <td>@entity.Amount.ToString("0.00")&nbsp;元</td>
                         <td>@entity.Size</td>
                         <td>@entity.Num</td>
                         <td>@entity.LocalName</td>

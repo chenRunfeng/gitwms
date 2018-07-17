@@ -80,7 +80,7 @@ namespace Git.Storage.Web.Lib
                     Description = pageEntity.SeoEntity.Description;
                 }
                 string cssFile = string.Empty;
-                string jsFile = string.Empty; ;
+                string jsFile = string.Empty; 
                 if (!pageEntity.FileGroupList.IsNullOrEmpty())
                 {
                     foreach (FileGroup fileGroup in pageEntity.FileGroupList)

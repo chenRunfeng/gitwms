@@ -218,6 +218,17 @@ namespace Git.Storage.Entity.Store
             }
             return this;
         }
+        [DataMapping(ColumnName = "InstoreID", DbType = DbType.Int32, Length = 4, CanNull = true, DefaultValue = null, PrimaryKey = false, AutoIncrement = false, IsMap = true)]
+        public string InstoreID { get; set; }
+
+        public LocalProductEntity IncludeInstoreID(bool flag)
+        {
+            if (flag && !this.ColumnList.Contains("InstoreID"))
+            {
+                this.ColumnList.Add("InstoreID");
+            }
+            return this;
+        }
 
     }
 

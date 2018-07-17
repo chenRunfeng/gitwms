@@ -51,7 +51,6 @@ namespace Git.Storage.Web.Areas.Client.Controllers
                 entity = entity == null ? new CustomerEntity() : entity;
                 ViewBag.DdlCusType = EnumHelper.GetOptions<ECusType>(entity.CusType, "请选择客户类别");
                 ViewBag.Customer = entity;
-
                 List<CusAddressEntity> listResult = provider.GetAddressList(entity.CusNum);
                 if (!listResult.IsNullOrEmpty())
                 {
@@ -101,6 +100,16 @@ namespace Git.Storage.Web.Areas.Client.Controllers
         [LoginFilter]
         public ActionResult Dialog()
         {
+            return View();
+        }
+        [LoginFilter]
+        public ActionResult OpenDetail(string CusNum)
+        {
+            CustomerProvider provider = new CustomerProvider();
+            CustomerEntity entity = provider.GetSingleCustomer(CusNum);
+            entity = entity == null ? new CustomerEntity() : entity;
+            ViewBag.DdlCusType = EnumHelper.GetOptions<ECusType>(entity.CusType, "请选择客户类别");
+            ViewBag.Customer = entity;
             return View();
         }
     }

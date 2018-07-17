@@ -1,0 +1,46 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="zh" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="zh" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="zh">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    @Html.Partial("_Title")
+    @Html.Raw(ViewBag.CssFile)
+</head>
+<body class="dialog">
+    <div class="tab-pane active" id="widget_tab1">
+        <table class="formtab_user">
+            <tr>
+                <td>时间</td>
+                <td><input id="txtStartTime" name="txtStartTime" type="text" class="input-large" value="" /></td>
+            </tr>
+            <tr>
+                <td>送货情况</td>
+                <td>
+                    <input id="txtSaleSituation" name="txtSaleSituation" type="text" class="input-large" value="" /> 
+                </td>
+            </tr>
+            <tr>
+                <td>收款情况</td>
+                <td><input id="txtGoodSituation" name="txtGoodSituation" type="text" class="input-large" value="" /></td>
+            </tr>
+            <tr>
+                <td>负责人</td>
+                <td><input id="txtLeader" name="txtLeader" type="text" class="input-large" value="" /></td>
+            </tr>
+            <tr>
+                <td>登记人</td>
+                <td><input id="txtRegistrant" name="txtRegistrant" type="text" class="input-large" value="" /></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

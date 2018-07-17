@@ -49,6 +49,8 @@
     <Compile Include="Base\AdminEntity.cs" />
     <Compile Include="Base\MeasureEntity.cs" />
     <Compile Include="Base\MeasureRelEntity.cs" />
+    <Compile Include="Base\PretenctedEnitity.cs" />
+    <Compile Include="Base\SaleEntity.cs" />
     <Compile Include="Base\SequenceEntity.cs" />
     <Compile Include="Base\SysDepartEntity.cs" />
     <Compile Include="Base\SysRelationEntity.cs" />

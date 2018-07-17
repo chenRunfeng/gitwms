@@ -1951,7 +1951,7 @@
     <Content Include="Areas\InStorage\Views\Product\List.cshtml" />
     <Content Include="Areas\InStorage\Views\Product\AddProduct.cshtml" />
     <Content Include="Areas\OutStorage\Views\Web.config" />
-    <Content Include="Areas\OutStorage\Views\Product\Add.cshtml" />
+    <Content Include="Areas\OutStorage\Views\Product\Addbak.cshtml" />
     <Content Include="Areas\OutStorage\Views\Product\AddProduct.cshtml" />
     <Content Include="Areas\OutStorage\Views\Product\Detail.cshtml" />
     <Content Include="Areas\OutStorage\Views\Product\Edit.cshtml" />
@@ -2009,6 +2009,18 @@
     <Content Include="Areas\Report\Views\Manager\Designer.cshtml" />
     <Content Include="Areas\Report\Views\Manager\Show.cshtml" />
     <Content Include="Areas\Report\Views\Manager\AddParam.cshtml" />
+    <Content Include="Areas\OutStorage\Views\Product\Sale.cshtml" />
+    <Content Include="Areas\Product\Views\Goods\Percentage.cshtml" />
+    <Content Include="Areas\OutStorage\Views\Product\Add.cshtml" />
+    <Content Include="Areas\Client\Views\Customer\OpenDetail.cshtml" />
+    <Content Include="Areas\Client\Views\Customer\AddTransaction.cshtml" />
+    <Content Include="Areas\Product\Views\Goods\AddDetail.cshtml" />
+    <Content Include="Areas\OutStorage\Views\Product\SDetail.cshtml" />
+    <Content Include="Areas\OutStorage\Views\Product\SEdit.cshtml" />
+    <Content Include="Areas\OutStorage\Views\Product\SAdd.cshtml" />
+    <Content Include="Areas\OutStorage\Views\Product\SAddProduct.cshtml" />
+    <Content Include="Areas\OutStorage\Views\Product\SRDetail.cshtml" />
+    <Content Include="Areas\OutStorage\Views\Product\ProtectedList.cshtml" />
     <None Include="Configs\Data\Database.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -2041,7 +2053,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Configs\Message\Message.config" />
-    <Content Include="Configs\Pages\PagesManage.config" />
+    <Content Include="Configs\Pages\PagesManage.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Configs\SEO\SEO.config">
       <SubType>Designer</SubType>
     </Content>
@@ -2080,14 +2094,18 @@
     <Content Include="Views\Home\AddUser.cshtml" />
     <Content Include="Views\Shared\_Title.cshtml" />
     <Content Include="Views\Home\RoleList.cshtml" />
-    <Content Include="Configs\Pages\Store-PagesManage.config" />
+    <Content Include="Configs\Pages\Store-PagesManage.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\Home\AddRole.cshtml" />
     <Content Include="Views\Home\DepartList.cshtml" />
     <Content Include="Configs\Pages\Client-PagesManage.config" />
     <Content Include="Views\Home\AddDepart.cshtml" />
     <Content Include="Views\Res\Power.cshtml" />
     <Content Include="Views\Res\SysLog.cshtml" />
-    <Content Include="Configs\Pages\Product-PagesManage.config" />
+    <Content Include="Configs\Pages\Product-PagesManage.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Configs\Pages\InStorage-PagesManage.config" />
     <Content Include="Views\Home\AccountSetting.cshtml" />
     <Content Include="Views\Home\ChangePwd.cshtml" />

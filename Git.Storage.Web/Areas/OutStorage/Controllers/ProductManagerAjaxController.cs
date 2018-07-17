@@ -13,12 +13,15 @@ using Git.Framework.DataTypes.ExtensionMethods;
 using Git.Framework.ORM;
 using Git.Storage.Provider;
 using Git.Framework.Json;
+using Git.Storage.Entity.Base;
 using Git.Storage.Common;
 using Git.Storage.Common.Excel;
 using System.Data;
 using Git.Storage.Provider.Order;
+using Git.Storage.Provider.Base;
 using Git.Framework.Controller.Mvc;
-
+using Git.Storage.Provider.Client;
+using Git.Storage.Entity.Store;
 namespace Git.Storage.Web.Areas.OutStorage.Controllers
 {
     public class ProductManagerAjaxController : AjaxPage
@@ -32,10 +35,12 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
         {
             string OrderNum = WebUtil.GetFormValue<string>("OrderNum", string.Empty);
             int Status = WebUtil.GetFormValue<int>("Status");
-            string Reason = WebUtil.GetFormValue<string>("Reason", string.Empty);
+            string Reason = WebUtil.GetFormValue<string>("Reason", string.Empty);                     
             OutStorageEntity entity = new OutStorageEntity();
             entity.Status = Status;
             entity.OrderNum = OrderNum;
+            entity.AuditeTime = DateTime.Now;
+            entity.OrderTime = DateTime.Now;
             entity.AuditUser = this.LoginUserCode;
             entity.OperateType = (int)EOpType.PC;
             entity.EquipmentCode = string.Empty;
@@ -44,10 +49,97 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
             entity.Reason = Reason;
             Bill<OutStorageEntity, OutStoDetailEntity> bill = new OutStorageOrder();
             string returnValue = bill.Audite(entity);
+            OutStorageProvider op = new OutStorageProvider();
+            PretenctedProvider pd = new PretenctedProvider();
+            entity = op.GetByOrderNum(OrderNum).FirstOrDefault();
+            if(entity.ProtectedWay.IsNotEmpty()==true&&returnValue=="1000")
+            {
+                PretenctedEnitity prected = new PretenctedEnitity();
+                prected.OrderNum = entity.OrderNum;
+                prected.CusNum = entity.CusNum;
+                prected.Status = 0;
+                int year = Convert.ToInt32(entity.ProtectedWay.Substring(0, 1));
+                int frequency = Convert.ToInt32(entity.ProtectedWay.Substring(2, 1));
+                if (entity.OrderTime.IsNullOrDBNull()==true)
+                {
+                    if (entity.ProtectedWay.Contains("年"))
+                    {
+                        prected.ProtectedTime = entity.AuditeTime.AddYears(1);
+                    }
+                    else if (entity.ProtectedWay.Contains("月"))
+                    {
+                        prected.ProtectedTime = entity.AuditeTime.AddMonths(1);
+                    }
+                }
+                else
+                {
+                    if (entity.ProtectedWay.Contains("年"))
+                    {
+                        prected.ProtectedTime = entity.OrderTime.AddYears(1);
+                    }
+                    else if (entity.ProtectedWay.Contains("月"))
+                    {
+                        prected.ProtectedTime = entity.OrderTime.AddMonths(1);
+                    }
+                }
+               int i=pd.Add(prected);
+            }
             this.ReturnJson.AddProperty("d", returnValue);
             return Content(this.ReturnJson.ToString());
         }
 
+        /// <summary>
+        /// 审核出库单
+        /// </summary>
+        /// <returns></returns>
+        [LoginAjaxFilter]
+        public ActionResult Remind()
+        {
+            string strID = WebUtil.GetFormValue<string>("ID", string.Empty);
+            int ID = Convert.ToInt32(strID);
+            int Status = WebUtil.GetFormValue<int>("Status");
+            string Remark = WebUtil.GetFormValue<string>("Remark", string.Empty);
+            PretenctedProvider pd = new PretenctedProvider();
+            PretenctedEnitity pretencted = pd.GetEnitityById(ID);
+            pretencted.Status = Status;
+            pretencted.Remark = Remark;
+            //OutStorageEntity entity = new OutStorageEntity();
+            //entity.Status = Status;
+            //entity.OrderNum = OrderNum;
+            //entity.AuditeTime = DateTime.Now;
+            //entity.OrderTime = DateTime.Now;
+            //entity.AuditUser = this.LoginUserCode;
+            //entity.OperateType = (int)EOpType.PC;
+            //entity.EquipmentCode = string.Empty;
+            //entity.EquipmentNum = string.Empty;
+            //entity.Remark = string.Empty;
+            //entity.Reason = Reason;
+            //Bill<OutStorageEntity, OutStoDetailEntity> bill = new OutStorageOrder();
+            OutStorageOrder storage = new OutStorageOrder();
+            string returnValue = storage.Remind(pretencted);
+            OutStorageProvider op = new OutStorageProvider();
+            OutStorageEntity entity = op.GetByOrderNum(pretencted.OrderNum).FirstOrDefault();
+            if (returnValue == "1000")
+            {
+                PretenctedEnitity prected = new PretenctedEnitity();
+                prected.OrderNum = pretencted.OrderNum;
+                prected.CusNum = pretencted.CusNum;
+                prected.Status = 0;
+                int year = Convert.ToInt32(entity.ProtectedWay.Substring(0, 1));
+                int frequency = Convert.ToInt32(entity.ProtectedWay.Substring(2, 1));
+                if (entity.ProtectedWay.Contains("年"))
+                {
+                    prected.ProtectedTime = pretencted.ProtectedTime.AddYears(1);
+                }
+                else if (entity.ProtectedWay.Contains("月"))
+                {
+                    prected.ProtectedTime = pretencted.ProtectedTime.AddMonths(1);
+                }                
+                int i = pd.Add(prected);
+            }
+            this.ReturnJson.AddProperty("d", returnValue);
+            return Content(this.ReturnJson.ToString());
+        }
         /// <summary>
         /// 加载出库单管理列表界面
         /// </summary>
@@ -117,7 +209,77 @@ namespace Git.Storage.Web.Areas.OutStorage.Controllers
             this.ReturnJson.AddProperty("RowCount", pageInfo.RowCount);
             return Content(this.ReturnJson.ToString());
         }
-
+        /// <summary>
+        /// 加载维护表列表界面
+        /// </summary>
+        /// <returns></returns>
+        //[LoginAjaxFilter]
+        //public ActionResult GetMainTList()
+        //{
+        //    int Status = WebUtil.GetFormValue<int>("Status", 0);
+        //    string OrderNum = WebUtil.GetFormValue<string>("OrderNum", string.Empty);
+        //    string CusName = WebUtil.GetFormValue<string>("CusName", string.Empty);
+        //    string beginTime = WebUtil.GetFormValue<string>("beginTime", string.Empty);
+        //    string endTime = WebUtil.GetFormValue<string>("endTime", string.Empty);
+        //    string order = WebUtil.GetFormValue<string>("order", string.Empty);
+        //    int OutType = WebUtil.GetFormValue<int>("OutType", 0);
+        //    string planNum = WebUtil.GetFormValue<string>("planNum");
+        //    int pageSize = WebUtil.GetFormValue<int>("PageSize", 10);
+        //    int pageIndex = WebUtil.GetFormValue<int>("PageIndex", 1);
+        //    PageInfo pageInfo = new PageInfo() { PageIndex = pageIndex, PageSize = pageSize };
+        //    PretenctedEnitity entity = new PretenctedEnitity();
+        //    if (Status > 0)
+        //    {
+        //        entity.Where(a => a.Status == Status);
+        //    }
+        //    if (!OrderNum.IsEmpty())
+        //    {
+        //        entity.Where("OrderNum", ECondition.Like, "%" + OrderNum + "%");
+        //    }
+        //    if (!CusName.IsEmpty())
+        //    {
+        //        CustomerProvider cp = new CustomerProvider();
+                
+        //        CustomerEntity cuse=cp.entity.Begin<PretenctedEnitity>()
+        //            .And<PretenctedEnitity>("CusNum", ECondition.Like, "%" + CusName + "%")
+        //            .Or<PretenctedEnitity>("CusName", ECondition.Like, "%" + CusName + "%")
+        //            .End<PretenctedEnitity>()
+        //            ;
+        //    }
+        //    if (!beginTime.IsEmpty() && !endTime.IsEmpty())
+        //    {
+        //        entity.Where("ProtectedTime", ECondition.Between, ConvertHelper.ToType<DateTime>(beginTime), ConvertHelper.ToType<DateTime>(endTime));
+        //    }
+        //    entity.And(a => a.StorageNum == this.DefaultStore);
+        //    if (!order.IsEmpty())
+        //    {
+        //        OrderProvider orderProvider = new OrderProvider();
+        //        List<string> listContractOrder = orderProvider.GetOrderPlan(order);
+        //        listContractOrder = listContractOrder.IsNull() ? new List<string>() : listContractOrder;
+        //        if (listContractOrder.Count == 0)
+        //        {
+        //            listContractOrder.Add(order);
+        //        }
+        //        entity.And("ContractOrder", ECondition.In, listContractOrder.ToArray());
+        //    }
+        //    if (OutType > 0)
+        //    {
+        //        entity.And(a => a.OutType == OutType);
+        //    }
+        //    if (!planNum.IsEmpty())
+        //    {
+        //        OutStoDetailEntity detail = new OutStoDetailEntity();
+        //        detail.Where("ContractOrder", ECondition.Like, "%" + planNum + "%");
+        //        entity.Left<OutStoDetailEntity>(detail, new Params<string, string>() { Item1 = "OrderNum", Item2 = "OrderNum" });
+        //    }
+        //    Bill<OutStorageEntity, OutStoDetailEntity> bill = new OutStorageOrder();
+        //    List<OutStorageEntity> listResult = bill.GetList(entity, ref pageInfo);
+        //    listResult = listResult == null ? new List<OutStorageEntity>() : listResult;
+        //    string json = ConvertJson.ListToJson<OutStorageEntity>(listResult, "List");
+        //    this.ReturnJson.AddProperty("Data", json);
+        //    this.ReturnJson.AddProperty("RowCount", pageInfo.RowCount);
+        //    return Content(this.ReturnJson.ToString());
+        //}
         /// <summary>
         /// 导出Excel
         /// </summary>

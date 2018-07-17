@@ -55,7 +55,84 @@
             }
         });
     },
+    SselectDialog: function () {
+        var submit = function (v, h, f) {
+            if (v == true) {
+                var tab = h.find("#tabInfo2");
+                var list = [];
+                $(tab).children("tbody").children("tr").each(function (i, item) {
+                    var Flag = $(item).find("input[type='checkbox']").attr("checked");
+                    var ProductNum = $(item).find("input[name='LocalPro_item']").val();
+                    var BatchNum = $(item).find("input[name='LocalPro_item']").attr("data-BatchNum");
+                    var LocalNum = $(item).find("input[name='LocalPro_item']").attr("data-LocalNum");
+                    var LocalName = $(item).find("input[name='LocalPro_item']").attr("data-LocalName");
+                    var Num = $(item).find(".span1").val();
+                    if (Flag) {
+                        var Product = {};
+                        Product["ProductNum"] = ProductNum;
+                        Product["BatchNum"] = BatchNum;
+                        Product["Num"] = Num;
+                        Product["LocalNum"] = LocalNum;
+                        Product["LocalName"] = LocalName;
+                        list.push(Product);
+                    }
+                });
+                if (list == undefined || list.length == 0) {
+                    $.jBox.tip("请选择要出库的项");
+                    return false;
+                }
+                var param = {};
+                param["list"] = JSON.stringify(list);
+                $.gitAjax({
+                    url: "/OutStorage/ProductAjax/AddProduct",
+                    type: "post",
+                    dataType: "json",
+                    data: param,
+                    success: function (result) {
+                        orderProduct.LoadSDetail();
+                    }
+                });
+            }
+        };
+        $.jBox.open("get:/OutStorage/Product/SAddProduct", "出库产品", 800, 450, {
+            buttons: { "确定": true, "关闭": false }, submit: submit, loaded: function (item) {
+                orderProduct.SAutoProduct($(item).find("#txtBarCode"), item);
+            }
+        });
+    },
     LoadDetail: function () {
+        $.gitAjax({
+            url: "/OutStorage/ProductAjax/LoadProduct",
+            data: undefined,
+            type: "post",
+            dataType: "json",
+            success: function (result) {
+                if (result.List != undefined) {
+                    var html = "";
+                    var json = JSON.parse(result.List);
+                    $(json.Data).each(function (i, item) {
+                        html += "<tr class=\"odd gradeX\">";
+                        html += "<td>" + item.ProductName + "</td>";
+                        html += "<td>" + item.BarCode + "</td>";
+                        html += "<td>" + item.ProductNum + "</td>";
+                        html += "<td>" + item.BatchNum + "</td>";
+                        //html += "<td>" + git.ToDecimal(item.OutPrice,2) + "&nbsp;元</td>";
+                        //html += "<td>" + git.ToDecimal(item.Amount, 2) + "&nbsp;元</td>";
+                        html += "<td>" + item.Size + "</td>";
+                        html += "<td>" + item.Num + "</td>";
+                        html += "<td>" + item.LocalName + "</td>";
+                        html += "<td>";
+                        html += "<a class=\"icon-edit\" href=\"javascript:void(0)\" onclick=\"orderProduct.EditNum('" + item.SnNum + "'," + item.Num + ")\" title=\"编辑\"></a>&nbsp;&nbsp;";
+                        html += "<a class=\"icon-remove\" href=\"javascript:void(0)\" onclick=\"orderProduct.DelDetail('" + item.SnNum + "')\" title=\"删除\"></a>";
+                        html += "</td>";
+                        html += "</tr>";
+                    });
+                    $("#tabInfo").children("tbody").html(html);
+                }
+            }
+        });
+    },
+    LoadSDetail: function () {
         $.gitAjax({
             url: "/OutStorage/ProductAjax/LoadProduct",
             data: undefined,
@@ -161,6 +238,25 @@
             }
         });
     },
+    SAutoProduct: function (item, target) {
+        //选择出库产品自动加载
+        $(item).autocomplete({
+            paramName: "productName",
+            url: '/Product/GoodsAjax/AutoProduct',
+            showResult: function (value, data) {
+                var row = JSON.parse(value);
+                return '<span>' + row.BarCode + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + row.ProductName + '</span>';
+            },
+            onItemSelect: function (item) {
+
+            },
+            maxItemsToShow: 5,
+            selectedCallback: function (item) {
+                $(target).find("#txtBarCode").val(item.BarCode);
+                orderProduct.SLoadLocalProduct(target);
+            }
+        });
+    },
     LoadLocalProduct: function (target) {
         //自动加载产品
         var BarCode = $("#txtBarCode").val();
@@ -181,9 +277,44 @@
                             html += "<td class=\"inorder_search\">" + item.ProductName + "</td>";
                             html += "<td class=\"inorder_search\">" + item.BarCode + "</td>";
                             html += "<td class=\"inorder_search\">" + item.BatchNum + "</td>";
+                            //html += "<td class=\"inorder_search\">" + item.AvgPrice + "</td>";
+                            //html += "<td class=\"inorder_search\"><input type=\"text\" class=\"span1\" id='sale' onblur='orderProduct.SaleOnblur(this,"+item.AvgPrice+")'/></td>";
                             html += "<td class=\"inorder_search\">" + item.LocalName + "</td>";
                             html += "<td class=\"inorder_search\">" + item.Num + "</td>";
-                            html += "<td class=\"inorder_search\"><input type=\"text\" class=\"span1\" /></td>";
+                            html += "<td class=\"inorder_search\"><input type=\"text\" class=\"span1\" id='outage' onblur='orderProduct.BoxOnblur(this,"+item.Num+")'/></td>";
+                            html += "</tr>";
+                        });
+                    }
+                }
+                $(target).find("#tabInfo2").children("tbody").html(html);
+            }
+        });
+    },
+    SLoadLocalProduct: function (target) {
+        //自动加载产品
+        var BarCode = $("#txtBarCode").val();
+        var param = {};
+        param["BarCode"] = BarCode;
+        $.gitAjax({
+            url: "/OutStorage/ProductAjax/GetLocalProductList",
+            data: param,
+            type: "post",
+            dataType: "json",
+            success: function (result) {
+                var html = "";
+                if (result.Data != undefined) {
+                    if (result.Data.List != undefined && result.Data.List.length > 0) {
+                        $(result.Data.List).each(function (i, item) {
+                            html += "<tr>";
+                            html += "<td class=\"inorder_search\"><input type=\"checkbox\" name=\"LocalPro_item\" data-BatchNum=\"" + item.BatchNum + "\" data-LocalNum=\"" + item.LocalNum + "\" data-LocalName=\"" + item.LocalName + "\"  value=\"" + item.ProductNum + "\"/></td>";
+                            html += "<td class=\"inorder_search\">" + item.ProductName + "</td>";
+                            html += "<td class=\"inorder_search\">" + item.BarCode + "</td>";
+                            html += "<td class=\"inorder_search\">" + item.BatchNum + "</td>";
+                            html += "<td class=\"inorder_search\">" + item.AvgPrice + "</td>";
+                            html += "<td class=\"inorder_search\"><input type=\"text\" class=\"span1\" id='sale' onblur='orderProduct.SaleOnblur(this," + item.AvgPrice + ")'/></td>";
+                            html += "<td class=\"inorder_search\">" + item.LocalName + "</td>";
+                            html += "<td class=\"inorder_search\">" + item.Num + "</td>";
+                            html += "<td class=\"inorder_search\"><input type=\"text\" class=\"span1\" id='outage' onblur='orderProduct.BoxOnblur(this," + item.Num + ")'/></td>";
                             html += "</tr>";
                         });
                     }
@@ -204,7 +335,11 @@
         var ContactName = $("#txtContactName").val();
         var CrateUser = $("#txtCrateUser").val();
         var OrderTime = $("#txtOrderTime").val();
+        var ProtectedWay = $("#txtProtectedWaySecond").val() + $("#UnitProtected").val() + $("#txtProtectedLSecond").val();
         var Remark = $("#txtRemark").val();
+        var IsSettlement = $("#txtIsSettlement").val();
+        var PayWay = $("#txtPayWay").val();
+        var TimeMainTain = $("#txtTimeMainTain").val();
         if (git.IsEmpty(OutType)) {
             $.jBox.tip("请选择出库单类型", "warn");
             return false;
@@ -229,6 +364,10 @@
         param["CrateUser"] = CrateUser;
         param["Phone"] = Phone;
         param["OrderTime"] = OrderTime;
+        param["ProtectedWay"] = ProtectedWay;
+        param["IsSettlement"] = IsSettlement;
+        param["PayWay"] = PayWay;
+        param["TimeMainTain"] = TimeMainTain;
         param["Remark"] = Remark;
         $.gitAjax({
             url: "/OutStorage/ProductAjax/Create",
@@ -430,16 +569,22 @@
             }
         });
     },
-    BoxOnblur: function (item, num, realNum) {
-        var valNum = parseFloat(num) - parseFloat(realNum);
+    BoxOnblur: function (item, num) {
+        var valNum = parseFloat(num);
         var val = $(item).val();
-        if (isNaN(val) && parseFloat(val) > 0) {
+        if (parseFloat(val) <0) {
             $.jBox.tip("出库数必须为数字并且大于0", "warn");
             $(item).val(valNum);
         }
         else if (val > valNum) {
-            //$.jBox.tip("出库数", "warn");
+            $.jBox.tip("出库数必须小于或等于库存数", "warn");
             $(item).val(valNum);
+        }
+    },
+    SaleOnblur: function (item, valNum) {
+        var val = $(item).val();
+        if (val<valNum) {
+            $.jBox.tip("销售价必须大于批发价", "warn");
         }
     }
 };
@@ -489,7 +634,7 @@ var OutStore = {
                             Html += "<td>" + item.CusName + "</td>";
                             Html += "<td>" + item.ContractOrder + "</td>";
                             Html += "<td>" + item.Num + "</td>";
-                            Html += "<td>" + git.ToDecimal(item.Amount,2) + "&nbsp;元</td>";
+                            //Html += "<td>" + git.ToDecimal(item.Amount,2) + "&nbsp;元</td>";
                             Html += "<td>" + git.GetEnumDesc(EAudite, item.Status) + "</td>";
                             Html += "<td>" + git.GetEnumDesc(EOpType, item.OperateType) + "</td>";
                             Html += "<td>" + item.CreateUserName + "</td>";
@@ -517,6 +662,152 @@ var OutStore = {
 
                 $("#tabInfo tbody").html(Html);
                 $("#mypager").pager({ pagenumber: pageIndex, recordCount: result.RowCount, pageSize: pageSize, buttonClickCallback: OutStore.PageClick });
+            }
+        });
+    },
+    PageSClick: function (pageIndex, pageSize) {
+        pageIndex = pageIndex == undefined ? 1 : pageIndex;
+        pageSize = pageSize == undefined ? 10 : pageSize;
+        var status = $("#btnStatusGroup").find(".disabled").val();
+        var OrderNum = $("#txtOutStoreNum").val();
+        var CusName = $("#txtCustomer").val();
+        var beginTime = $("#txtBeginTime").val();
+        var endTime = $("#txtEndTime").val();
+        var order = $("#txtOrderNum").val(); //客户订单
+        var OutType = $("#ddlOutType").val();
+        var planNum = $("#txtPlanOrder").val();
+        var ReprtNum = $("#txtReprtNum").val();
+        var param = {};
+        param["Status"] = status;
+        param["OrderNum"] = OrderNum;
+        param["CusName"] = CusName;
+        param["beginTime"] = beginTime;
+        param["endTime"] = endTime;
+        param["order"] = order;
+        param["OutType"] = OutType;
+        param["planNum"] = planNum;
+        param["PageSize"] = pageSize;
+        param["PageIndex"] = pageIndex;
+        $.gitAjax({
+            url: "/OutStorage/ProductManagerAjax/GetList",
+            data: param,
+            type: "post",
+            dataType: "json",
+            success: function (result) {
+
+                var Html = "";
+                if (result.Data != undefined) {
+                    var json = JSON.parse(result.Data);
+
+                    if (json.List != undefined && json.List.length > 0) {
+                        $(json.List).each(function (i, item) {
+                            Html += "<tr class=\"odd gradeX\">";
+                            Html += "<td><input type=\"checkbox\" value=\"" + item.OrderNum + "\"/></td>";
+                            Html += "<td>" + item.OrderNum + "</td>";
+                            Html += "<td>" + git.GetEnumDesc(EOutType, item.OutType) + "</td>";
+                            Html += "<td>" + item.CusName + "</td>";
+                            Html += "<td>" + item.ContractOrder + "</td>";
+                            Html += "<td>" + item.Num + "</td>";
+                            Html += "<td>" + git.ToDecimal(item.Amount,2) + "&nbsp;元</td>";
+                            Html += "<td>" + git.GetEnumDesc(EAudite, item.Status) + "</td>";
+                            Html += "<td>" + git.GetEnumDesc(EOpType, item.OperateType) + "</td>";
+                            Html += "<td>" + item.CreateUserName + "</td>";
+                            Html += "<td>" + git.JsonToDateTimeymd(item.CreateTime) + "</td>";
+                            Html += "<td>";
+                            if (item.Status == EAuditeJson.Wait || item.Status == EAuditeJson.NotPass) {
+                                Html += "<a class=\"icon-edit\" href='/OutStorage/Product/SEdit?orderNum=" + item.OrderNum + "' title=\"编辑\"></a>&nbsp;&nbsp;";
+                            }
+                            Html += "<a class=\"icon-remove\" href=\"javascript:void(0)\" onclick=\"OutStore.Delete('" + item.OrderNum + "')\" title=\"删除\"></a>&nbsp;&nbsp;";
+                            Html += "<a class=\"icon-eye-open\" href=\"javascript:void(0)\" onclick=\"OutStore.Audite(1,'" + item.OrderNum + "')\" title=\"查看\"></a>&nbsp;&nbsp;";
+
+                            //if (item.Status == EAuditeJson.Wait) {
+                            //    Html += "<a class=\"icon-ok\" href=\"javascript:void(0)\" onclick=\"OutStore.Audite(2,'" + item.OrderNum + "')\" title=\"审核\"></a>&nbsp;&nbsp;";
+                            //}
+                            //if (item.OutType == EOutTypeJson.Sell) {
+                            //    Html += "<a class=\" icon-print\" href='/OutStorage/Product/Print?orderNum=" + item.OrderNum + "' title=\"打印\"></a>&nbsp;&nbsp;";
+                            //}
+                            //Html += "<a class=\" icon-print\" href='/Report/Manager/Show?ReportNum=" + ReprtNum + "&OrderNum=" + item.OrderNum + "' title=\"打印\"></a>&nbsp;&nbsp;";
+
+                            Html += "</td>";
+                            Html += "</tr>";
+                        });
+                    }
+                }
+
+                $("#tabInfo tbody").html(Html);
+                $("#mypager").pager({ pagenumber: pageIndex, recordCount: result.RowCount, pageSize: pageSize, buttonClickCallback: OutStore.PageSClick });
+            }
+        });
+    },
+    PageRSClick: function (pageIndex, pageSize) {
+        pageIndex = pageIndex == undefined ? 1 : pageIndex;
+        pageSize = pageSize == undefined ? 10 : pageSize;
+        var status = $("#btnStatusGroup").find(".disabled").val();
+        //var OrderNum = $("#txtOutStoreNum").val();
+        var CusName = $("#txtCustomer").val();
+        var beginTime = $("#txtBeginTime").val();
+        var endTime = $("#txtEndTime").val();
+        //var order = $("#txtOrderNum").val(); //客户订单
+        //var OutType = $("#ddlOutType").val();
+        //var planNum = $("#txtPlanOrder").val();
+        //var ReprtNum = $("#txtReprtNum").val();
+        var param = {};
+        param["Status"] = status;
+        //param["OrderNum"] = OrderNum;
+        param["CusName"] = CusName;
+        param["beginTime"] = beginTime;
+        param["endTime"] = endTime;
+        //param["order"] = order;
+        //param["OutType"] = OutType;
+        //param["planNum"] = planNum;
+        param["PageSize"] = pageSize;
+        param["PageIndex"] = pageIndex;
+        $.gitAjax({
+            url: "/OutStorage/ProductManagerAjax/GetMainTList",
+            data: param,
+            type: "post",
+            dataType: "json",
+            success: function (result) {
+                var Html = "";
+                if (result.Data != undefined) {
+                    var json = JSON.parse(result.Data);
+                    if (json.List != undefined && json.List.length > 0) {
+                        $(json.List).each(function (i, item) {
+                            Html += "<tr class=\"odd gradeX\">";
+                            Html += "<td><input type=\"checkbox\" value=\"" + item.ID + "\"/></td>";
+                            Html += "<td>" + item.OrderNum + "</td>";
+                            Html += "<td>" + item.CusName + "</td>";
+                            Html += "<td>" + item.RemarkLevel + "</td>";
+                            Html += "<td>" + item.strStatus + "</td>";
+                            Html += "<td>" + item.pre + "</td>";
+                            Html += "<td>" + git.ToDecimal(item.Amount, 2) + "&nbsp;元</td>";
+                            Html += "<td>" + git.GetEnumDesc(EAudite, item.Status) + "</td>";
+                            Html += "<td>" + git.GetEnumDesc(EOpType, item.OperateType) + "</td>";
+                            Html += "<td>" + item.CreateUserName + "</td>";
+                            Html += "<td>" + git.JsonToDateTimeymd(item.CreateTime) + "</td>";
+                            Html += "<td>";
+                            if (item.Status == EAuditeJson.Wait || item.Status == EAuditeJson.NotPass) {
+                                Html += "<a class=\"icon-edit\" href='/OutStorage/Product/SEdit?orderNum=" + item.OrderNum + "' title=\"编辑\"></a>&nbsp;&nbsp;";
+                            }
+                            Html += "<a class=\"icon-remove\" href=\"javascript:void(0)\" onclick=\"OutStore.Delete('" + item.OrderNum + "')\" title=\"删除\"></a>&nbsp;&nbsp;";
+                            Html += "<a class=\"icon-eye-open\" href=\"javascript:void(0)\" onclick=\"OutStore.Audite(1,'" + item.OrderNum + "')\" title=\"查看\"></a>&nbsp;&nbsp;";
+
+                            //if (item.Status == EAuditeJson.Wait) {
+                            //    Html += "<a class=\"icon-ok\" href=\"javascript:void(0)\" onclick=\"OutStore.Audite(2,'" + item.OrderNum + "')\" title=\"审核\"></a>&nbsp;&nbsp;";
+                            //}
+                            //if (item.OutType == EOutTypeJson.Sell) {
+                            //    Html += "<a class=\" icon-print\" href='/OutStorage/Product/Print?orderNum=" + item.OrderNum + "' title=\"打印\"></a>&nbsp;&nbsp;";
+                            //}
+                            //Html += "<a class=\" icon-print\" href='/Report/Manager/Show?ReportNum=" + ReprtNum + "&OrderNum=" + item.OrderNum + "' title=\"打印\"></a>&nbsp;&nbsp;";
+
+                            Html += "</td>";
+                            Html += "</tr>";
+                        });
+                    }
+                }
+
+                $("#tabInfo tbody").html(Html);
+                $("#mypager").pager({ pagenumber: pageIndex, recordCount: result.RowCount, pageSize: pageSize, buttonClickCallback: OutStore.PageSClick });
             }
         });
     },
@@ -749,7 +1040,7 @@ var OutStore = {
                             if (result.d != undefined) {
                                 if (result.d == "1000") {
                                     $.jBox.tip("出库单审核成功", "success");
-                                    OutStore.PageClick(1, 20);
+                                    OutStore.PageSClick(1, 20);
                                 } else if (result.d == "1001") {
                                     $.jBox.tip("出库单不存在", "warn");
                                 } else if (result.d == "1002") {
@@ -768,9 +1059,9 @@ var OutStore = {
             }
         };
         if (flag == 1) {
-            $.jBox.open("get:/OutStorage/Product/Detail?flag=" + flag + "&orderNum=" + orderNum, "出库单详细", 800, 410, { buttons: { "关闭": 3 }, submit: submit });
+            $.jBox.open("get:/OutStorage/Product/SDetail?flag=" + flag + "&orderNum=" + orderNum, "出库单详细", 800, 410, { buttons: { "关闭": 3 }, submit: submit });
         } else if (flag == 2) {
-            $.jBox.open("get:/OutStorage/Product/Detail?flag=" + flag + "&orderNum=" + orderNum, "出库单审核", 800, 410, { buttons: { "审核通过": 1, "审核不通过": 2, "关闭": 3 }, submit: submit });
+            $.jBox.open("get:/OutStorage/Product/SDetail?flag=" + flag + "&orderNum=" + orderNum, "出库单审核", 800, 410, { buttons: { "审核通过": 1, "审核不通过": 2, "关闭": 3 }, submit: submit });
         }
     },
     SearchEvent: function () {
